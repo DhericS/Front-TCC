@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import Menu from '../components/Menu';
-import Rodape from '../components/Rodape';
 
 const EditarPlanoPage = () => {
   const { id } = useParams();

@@ -32,7 +32,7 @@ const CadastrarPlanoPage = () => {
         ...form,
         academiaId: Number(academiaId)
       });
-      navigate(`/academias/${academiaId}`);
+      navigate(`/academias/${academiaId}/editar`);
     } catch (error) {
       alert('Erro ao cadastrar plano.');
     }

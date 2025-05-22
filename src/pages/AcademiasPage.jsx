@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import api from '../services/api';
 import { motion } from 'framer-motion';
 import Menu from '../components/Menu';
@@ -18,8 +17,11 @@ const opcoesFiltro = {
 };
 
 const AcademiasPage = () => {
+  const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
+
   const [academias, setAcademias] = useState([]);
   const [search, setSearch] = useState('');
+  const [academiasExternas, setAcademiasExternas] = useState([]);
   const [filtros, setFiltros] = useState(filtrosPadrao);
   const [loading, setLoading] = useState(false);
 
@@ -33,6 +35,18 @@ const AcademiasPage = () => {
           : [...atual, valor]
       };
     });
+  };
+
+  const buscarAcademiasExternas = async () => {
+    if (!search) return;
+    try {
+      const res = await api.get(`/academia/externas?endereco=${encodeURIComponent(search)}`);
+      setAcademiasExternas(res.data);
+      console.log("Academias externas:", res.data);
+    } catch (e) {
+      console.error("Erro ao buscar academias externas", e);
+      setAcademiasExternas([]);
+    }
   };
 
   const buscarAcademias = async (e) => {
@@ -51,6 +65,7 @@ const AcademiasPage = () => {
     } catch {
       setAcademias([]);
     } finally {
+      await buscarAcademiasExternas();
       setLoading(false);
     }
   };
@@ -103,15 +118,20 @@ const AcademiasPage = () => {
         </div>
       </section>
 
-      {/* Lista de academias */}
       <section className="py-16 px-6 bg-white min-h-screen">
         <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {loading && (
             <p className="col-span-full text-center text-gray-500">Carregando academias...</p>
           )}
 
-          {!loading && academias.length === 0 && (
+          {!loading && academias.length === 0 && academiasExternas.length === 0 && (
             <p className="col-span-full text-center text-gray-500">Nenhuma academia encontrada.</p>
+          )}
+
+          {!loading && academias.length > 0 && (
+            <div className="col-span-full mb-4">
+              <h3 className="text-2xl font-bold text-black">Academias Cadastradas</h3>
+            </div>
           )}
 
           {!loading && academias.map((a, index) => (
@@ -135,6 +155,40 @@ const AcademiasPage = () => {
               </div>
             </motion.div>
           ))}
+
+          {!loading && academiasExternas.length > 0 && (
+            <>
+              <div className="col-span-full mt-10 mb-4">
+                <h3 className="text-2xl font-bold text-black">Academias Externas</h3>
+              </div>
+              {academiasExternas.map((a, index) => (
+                <motion.div
+                  key={a.placeId}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="bg-gray-100 rounded-lg overflow-hidden shadow hover:shadow-lg transition cursor-pointer"
+                >
+                  <img
+                    src={
+                      a.photoReference
+                        ? `https://places.googleapis.com/v1/${a.photoReference}/media?maxWidthPx=800&key=${apiKey}`
+                        : '/assets/imagens/academia1.jpg'
+                    }
+                    alt={a.nome}
+                    className="w-full h-48 object-cover cursor-pointer"
+                    onClick={() => window.location.href = `/academias-externas/${a.placeId}`}
+                  />
+                  <div className="p-4">
+                    <h3 className="text-xl font-bold mb-1 text-black">{a.nome}</h3>
+                    <p className="text-sm text-gray-600 mb-1">{a.endereco}</p>
+                    <p className="text-yellow-500 text-sm">⭐ {a.avaliacao} ({a.totalAvaliacoes})</p>
+                  </div>
+                </motion.div>
+              ))}
+            </>
+          )}
         </div>
       </section>
     </>

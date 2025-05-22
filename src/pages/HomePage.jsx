@@ -46,7 +46,7 @@ const HomePage = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="relative z-10 max-w-4xl mx-auto"
+          className="relative z-0 max-w-4xl mx-auto"
         >
           <h1 className="text-5xl font-extrabold mb-4 leading-tight">Transforme sua Rotina Fitness</h1>
           <p className="text-lg text-gray-300 mb-8">Encontre academias, acesse treinos, conecte-se com os melhores profissionais.</p>

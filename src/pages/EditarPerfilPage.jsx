@@ -1,49 +1,54 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useGetUser } from '../hooks/useGetUser';
+import { toast } from 'sonner';
+import api from '../services/api';
 
 const EditarPerfilPage = () => {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ nome: '', email: '', telefone: '', tipoUsuario: '' });
   const [erro, setErro] = useState('');
   const [sucesso, setSucesso] = useState(false);
-
-  useEffect(() => {
-    axios.get('/usuarios/me', {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-    })
-      .then(res => {
-        console.log("Resposta do /usuarios/me:", res.data);
-
-        const { nome, email, telefone } = res.data;
-        const tipoUsuario = res.data.tipoUsuario?.toLowerCase() || '';
-
-        setForm({ nome, email, telefone, tipoUsuario });
-        window.formDebug = { nome, email, telefone, tipoUsuario };
-        console.log("formDebug no window:", window.formDebug);
-      })
-      .catch(() => navigate('/login'));
-  }, [navigate]);
+  const { user, loading } = useGetUser();
+  const [form, setForm] = useState({ nome: '', email: '', telefone: '', tipoUsuario: '', senha: '' });
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  useEffect(() => {
+    if (loading) return;
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    setForm({
+      nome: user.nome || '',
+      email: user.email || '',
+      telefone: user.telefone || '',
+      tipoUsuario: user.tipoUsuario || ''
+    });
+  }, [loading]);
+
+  console.log(user);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErro('');
-    setSucesso(false);
-
-    console.log("Enviando update com payload:", form);
 
     try {
-      await axios.put('/usuarios/atualizar', form, {
+      await api.put(`/usuarios/atualizar`, {
+        ...form,
+        tipoUsuario: user.tipoUsuario,
+        id: user.id
+      }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      setSucesso(true);
-      setTimeout(() => navigate('/perfil'), 1500);
+      toast.success('Perfil atualizado com sucesso.');
+      navigate(-1);
     } catch (err) {
-      setErro('Erro ao atualizar perfil.');
+      console.error(err);
+      toast.error('Erro ao atualizar perfil.');
     }
   };
 
@@ -70,9 +75,13 @@ const EditarPerfilPage = () => {
             <label className="block font-semibold">Telefone</label>
             <input type="text" name="telefone" value={form.telefone} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2" required />
           </div>
+          <div>
+            <label className="block font-semibold">Senha</label>
+            <input type="password" name="senha" value={form.senha} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2" required />
+          </div>
 
-          <button type="submit" className="w-full bg-black text-white py-2 px-4 rounded-md border border-black hover:bg-white hover:text-black transition">
-            Salvar Alterações
+          <button type="submit" className="w-full bg-black text-white py-2 px-4 rounded-md border border-black hover:bg-white hover:text-black transition disabled:opacity-50" disabled={loading}>
+            {loading ? 'Carregando...' : 'Salvar Alterações'}
           </button>
         </form>
       </div>

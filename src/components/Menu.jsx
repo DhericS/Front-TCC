@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import ModalDialog from './ModalDialog';
 
 const Menu = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 677);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isModalLogoutIsOpen, setIsModalLogoutIsOpen] = useState(false);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 677);
@@ -47,7 +49,7 @@ const Menu = () => {
       {isAuthenticated && (
         <li>
           <button
-            onClick={handleLogout}
+            onClick={() => setIsModalLogoutIsOpen(true)}
             className="text-gray-800 hover:underline"
           >
             Logout
@@ -94,6 +96,15 @@ const Menu = () => {
           )}
         </>
       )}
+
+      <ModalDialog 
+        description={"Você tem certeza que deseja sair?"}
+        isOpen={isModalLogoutIsOpen}
+        onClose={() => setIsModalLogoutIsOpen(false)}
+        title="Sair"
+        onConfirm={handleLogout}
+        loading={false}
+      />
     </header>
   );
 };

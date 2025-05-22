@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useGetUser } from '../hooks/useGetUser';
+import Avaliacoes from '../components/Avaliacoes';
 
 const gruposMuscularesLabels = {
   PEITO: 'Peito',
@@ -10,11 +12,13 @@ const gruposMuscularesLabels = {
   OMBROS: 'Ombros',
 };
 
-const DetalhesTreinoPage = () => {
+const DietasTreinoPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const [treino, setTreino] = useState(null);
+  const { user, loading: loadingUsuario } = useGetUser(); // Obtendo usuário logado
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -36,6 +40,8 @@ const DetalhesTreinoPage = () => {
 
   if (loading) return <div className="p-8 text-center">Carregando treino...</div>;
   if (!treino) return <div className="p-8 text-center text-red-600">Treino não encontrado.</div>;
+
+  if (loadingUsuario) return <div className="p-8 text-center">Carregando usuário...</div>;
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -81,9 +87,16 @@ const DetalhesTreinoPage = () => {
         >
           ← Voltar para lista de treinos
         </Link>
+
+        {/* Seção de Avaliações */}
+        <Avaliacoes
+          entidadeId={treino.id}
+          tipoEntidade="TREINO"
+          usuarioLogadoId={user?.id}
+        />
       </div>
     </div>
   );
 };
 
-export default DetalhesTreinoPage;
+export default DietasTreinoPage;

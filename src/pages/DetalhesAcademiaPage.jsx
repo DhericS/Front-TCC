@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import api from '../services/api';
-import Menu from '../components/Menu';
-import Rodape from '../components/Rodape';
 import { motion } from 'framer-motion';
+import Avaliacoes from '../components/Avaliacoes';
+import { useGetUser } from '../hooks/useGetUser';
 
 const diaLabel = {
   SEGUNDA: 'Segunda-feira',
@@ -18,6 +18,7 @@ const diaLabel = {
 const DetalhesAcademiaPage = () => {
   const { id } = useParams();
   const [academia, setAcademia] = useState(null);
+  const { user, loading: loadingUser } = useGetUser();
 
   useEffect(() => {
     api.get(`/academia/${id}`)
@@ -25,34 +26,18 @@ const DetalhesAcademiaPage = () => {
       .catch(() => setAcademia(null));
   }, [id]);
 
-  const handleDeletePlano = async (planoId) => {
-    if (window.confirm('Tem certeza que deseja deletar este plano?')) {
-      try {
-        await api.delete(`/planos/${planoId}`);
-        const res = await api.get(`/academia/${id}`);
-        setAcademia(res.data);
-      } catch {
-        alert('Erro ao deletar plano.');
-      }
-    }
-  };
-
-  const handleDeleteAtividade = async (atividadeId) => {
-    if (window.confirm('Tem certeza que deseja deletar esta atividade?')) {
-      try {
-        await api.delete(`/atividades/${atividadeId}`);
-        const res = await api.get(`/academia/${id}`);
-        setAcademia(res.data);
-      } catch {
-        alert('Erro ao deletar atividade.');
-      }
-    }
-  };
-
   if (!academia) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="text-gray-500">Carregando detalhes da academia...</p>
+      </div>
+    );
+  }
+
+  if (loadingUser) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-500">Carregando usuário...</p>
       </div>
     );
   }
@@ -81,52 +66,24 @@ const DetalhesAcademiaPage = () => {
                   {academia.tipo}
                 </span>
               </div>
+
               {academia.atividades && academia.atividades.length > 0 && (
                 <div className="mt-6">
                   <h3 className="text-lg font-bold mb-2">Atividades</h3>
                   <ul className="space-y-2 text-sm">
                     {academia.atividades.map((a, index) => (
                       <li key={index} className="bg-gray-100 p-2 rounded shadow">
-                        <p className="font-medium">{a.nome}</p>
-                        <p className="text-gray-500">{diaLabel[a.diaSemana] || a.diaSemana} - {a.horario}</p>
-                        <div className="flex justify-end gap-2 mt-2">
-                          <Link
-                            to={`/atividades/editar/${a.id}`}
-                            className="text-sm border border-black text-black px-3 py-1 rounded hover:bg-black hover:text-white"
-                          >
-                            Editar
-                          </Link>
-                          <button
-                            onClick={() => handleDeleteAtividade(a.id)}
-                            className="text-sm border border-black text-black px-3 py-1 rounded hover:bg-black hover:text-white"
-                          >
-                            Deletar
-                          </button>
-                        </div>
+                        <p className="font-medium">{diaLabel[a.diaSemana] || a.diaSemana} - {a.horario}</p>
+                        <p className="text-gray-500">{a.nome}</p>
                       </li>
                     ))}
                   </ul>
                 </div>
               )}
-              <div className="mt-6">
-                <Link
-                  to={`/planos/cadastrar?academiaId=${academia.id}`}
-                  className="inline-block bg-black text-white py-2 px-4 rounded hover:bg-gray-800 mr-3"
-                >
-                  Cadastrar Plano
-                </Link>
-                <Link
-                  to={`/atividades/cadastrar?academiaId=${academia.id}`}
-                  className="inline-block bg-black text-white py-2 px-4 rounded hover:bg-gray-800"
-                >
-                  Cadastrar Atividade
-                </Link>
-              </div>
             </div>
           </motion.div>
 
-          {/* Planos */}
-          {academia.planos && academia.planos.length > 0 && ( 
+          {academia.planos && academia.planos.length > 0 && (
             <div className="mt-12">
               <h3 className="text-xl font-bold mb-4">Planos disponíveis</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -139,25 +96,17 @@ const DetalhesAcademiaPage = () => {
                         R$ {typeof p.preco === 'number' ? p.preco.toFixed(2) : 'Preço inválido'}
                       </p>
                     </div>
-                    <div className="flex justify-between gap-2 mt-4">
-                      <Link
-                        to={`/planos/editar/${p.id}`}
-                        className="border border-black text-black px-4 py-2 rounded hover:bg-black hover:text-white text-sm"
-                      >
-                        Editar
-                      </Link>
-                      <button
-                        onClick={() => handleDeletePlano(p.id)}
-                        className="border border-black text-black px-4 py-2 rounded hover:bg-black hover:text-white text-sm"
-                      >
-                        Deletar
-                      </button>
-                    </div>
                   </div>
                 ))}
               </div>
             </div>
           )}
+
+          <Avaliacoes
+            entidadeId={academia.id}
+            tipoEntidade="ACADEMIA"
+            usuarioLogadoId={user?.id}
+          />
         </div>
       </section>
     </>

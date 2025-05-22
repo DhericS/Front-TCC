@@ -35,7 +35,6 @@ export const useGetUser = () => {
                 setUser({ ...res.data, role: decoded.role });
             } catch (error) {
                 toast.error('Falha ao carregar o usuário');
-                setLoading(false);
             } finally {
                 setLoading(false);
             }

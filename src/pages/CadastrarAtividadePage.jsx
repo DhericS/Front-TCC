@@ -52,7 +52,7 @@ const CadastrarAtividadePage = () => {
     try {
       await Promise.all(atividades.map((atividade) => api.post('/atividades', atividade)));
       alert('Atividades cadastradas com sucesso.');
-      navigate(`/academias/${academiaId}`);
+      navigate(`/academias/${academiaId}/editar`);
     } catch (error) {
       alert('Erro ao cadastrar atividades.');
     }
