@@ -54,8 +54,7 @@ const TreinosPage = () => {
     });
   };
 
-  const buscarTreinos = async (e) => {
-    if (e) e.preventDefault();
+  const buscarTreinos = async () => {
     setLoading(true);
 
     const params = new URLSearchParams();
@@ -76,7 +75,7 @@ const TreinosPage = () => {
 
   useEffect(() => {
     buscarTreinos();
-  }, []);
+  }, [search, filtros]);
 
   const handleVerDetalhes = (treino) => {
     navigate(`/treinos/${treino.id}`);
@@ -88,10 +87,7 @@ const TreinosPage = () => {
         <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-6">Encontre um Treino</h2>
 
-          <form
-            onSubmit={buscarTreinos}
-            className="flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto mb-4"
-          >
+          <div className="flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto mb-4">
             <input
               type="search"
               placeholder="Digite o nome ou parte do treino"
@@ -99,14 +95,7 @@ const TreinosPage = () => {
               onChange={(e) => setSearch(e.target.value)}
               className="flex-grow min-w-[250px] px-4 py-2 rounded text-black"
             />
-            <button
-              type="submit"
-              className="bg-white text-black font-semibold px-6 py-2 rounded hover:bg-gray-200"
-              disabled={loading}
-            >
-              {loading ? 'Buscando...' : 'Buscar'}
-            </button>
-          </form>
+          </div>
 
           <div className="flex flex-wrap justify-center gap-6 max-w-4xl mx-auto text-left">
             <div className="min-w-[10rem]">

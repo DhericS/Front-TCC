@@ -116,7 +116,7 @@ const LoginPage = () => {
           </motion.button>
 
           <div className="text-sm text-center mt-4 text-gray-500">
-            <a href="/reset-senha" className="hover:underline text-black">
+            <a href="/esquecer-senha" className="hover:underline text-black">
               Esqueceu sua senha?
             </a>
           </div>

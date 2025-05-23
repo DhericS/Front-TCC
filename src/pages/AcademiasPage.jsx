@@ -42,15 +42,13 @@ const AcademiasPage = () => {
     try {
       const res = await api.get(`/academia/externas?endereco=${encodeURIComponent(search)}`);
       setAcademiasExternas(res.data);
-      console.log("Academias externas:", res.data);
     } catch (e) {
       console.error("Erro ao buscar academias externas", e);
       setAcademiasExternas([]);
     }
   };
 
-  const buscarAcademias = async (e) => {
-    if (e) e.preventDefault();
+  const buscarAcademias = async () => {
     setLoading(true);
 
     const params = new URLSearchParams();
@@ -65,14 +63,17 @@ const AcademiasPage = () => {
     } catch {
       setAcademias([]);
     } finally {
-      await buscarAcademiasExternas();
       setLoading(false);
     }
   };
 
   useEffect(() => {
     buscarAcademias();
-  }, []);
+  }, [search, filtros]);
+
+  useEffect(() => {
+    buscarAcademiasExternas();
+  }, [search]);
 
   return (
     <>
@@ -80,7 +81,7 @@ const AcademiasPage = () => {
         <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-6">Encontre uma Academia</h2>
 
-          <form onSubmit={buscarAcademias} className="flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto mb-4">
+          <div className="flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto mb-4">
             <input
               type="search"
               placeholder="Digite o nome ou cidade"
@@ -88,14 +89,7 @@ const AcademiasPage = () => {
               onChange={(e) => setSearch(e.target.value)}
               className="flex-grow min-w-[250px] px-4 py-2 rounded text-black"
             />
-            <button
-              type="submit"
-              className="bg-white text-black font-semibold px-6 py-2 rounded hover:bg-gray-200"
-              disabled={loading}
-            >
-              {loading ? 'Buscando...' : 'Buscar'}
-            </button>
-          </form>
+          </div>
 
           <div className="flex flex-wrap justify-center gap-6 max-w-4xl mx-auto text-left">
             {Object.entries(opcoesFiltro).map(([categoria, opcoes]) => (

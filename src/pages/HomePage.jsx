@@ -4,13 +4,16 @@ import Menu from '../components/Menu';
 import Rodape from '../components/Rodape';
 import CardFeature from '../components/CardFeature';
 import { motion } from 'framer-motion';
+import { useGetUser } from '../hooks/useGetUser';
 
 const HomePage = () => {
+  const { user, loading } = useGetUser();
+
   const features = [
     {
       title: 'Treinos Personalizados',
       desc: 'Treinos da comunidade para todos os objetivos.',
-      img: 'https://images.pexels.com/photos/1954524/pexels-photo-1954524.jpeg',
+      img: '/assets/imagens/treino.jpg',
       link: '/treinos'
     },
     {
@@ -20,10 +23,10 @@ const HomePage = () => {
       link: '/personais'
     },
     {
-      title: 'Academias Avaliadas',
-      desc: 'Consulte estruturas, limpeza e horários de pico.',
-      img: 'https://images.pexels.com/photos/13197535/pexels-photo-13197535.jpeg',
-      link: '/academias'
+      title: 'Dietas Balanceadas',
+      desc: 'Receitas para bulking, cutting e manutenção de forma gratuita.',
+      img: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg',
+      link: '/dietas'
     }
   ];
 
@@ -38,8 +41,6 @@ const HomePage = () => {
 
   return (
     <>
-
-      {/* HERO section */}
       <section className="bg-black text-white py-32 px-6 text-center relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/assets/imagens/fundo.jpg')] bg-cover bg-center opacity-20"></div>
         <motion.div
@@ -50,17 +51,18 @@ const HomePage = () => {
         >
           <h1 className="text-5xl font-extrabold mb-4 leading-tight">Transforme sua Rotina Fitness</h1>
           <p className="text-lg text-gray-300 mb-8">Encontre academias, acesse treinos, conecte-se com os melhores profissionais.</p>
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ type: 'spring', stiffness: 300 }}
-          >
-            <Link to="/cadastro" className="bg-white text-black font-bold py-3 px-6 rounded-full hover:bg-gray-200 transition">Comece Agora</Link>
-          </motion.div>
+          {!user && !loading && (
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: 'spring', stiffness: 300 }}
+            >
+              <Link to="/cadastro" className="bg-white text-black font-bold py-3 px-6 rounded-full hover:bg-gray-200 transition">Comece Agora</Link>
+            </motion.div>
+          )}
         </motion.div>
       </section>
 
-      {/* Destaques rápidos */}
       <section className="bg-white py-20 px-6 text-center">
         <h2 className="text-3xl font-bold mb-12">Soluções que te colocam em movimento</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -78,7 +80,42 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Sobre a plataforma */}
+      <section className="bg-gray-50 py-24 px-6">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+          <motion.div
+            className="w-full overflow-hidden rounded-2xl shadow-lg"
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <img
+              src="https://images.pexels.com/photos/1954524/pexels-photo-1954524.jpeg"
+              alt="Interior de academia com equipamentos modernos e luz natural"
+              className="w-full h-[280px] object-cover"
+            />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <h3 className="text-4xl font-extrabold mb-4 text-gray-900">Avaliações reais. Escolhas inteligentes.</h3>
+            <p className="text-gray-700 text-lg mb-6">
+              Descubra academias perto de você com avaliações de alunos, fotos reais e informações sobre estrutura, horários e mais.
+            </p>
+            <Link
+              to="/academias"
+              className="inline-block bg-black text-white font-semibold px-6 py-3 rounded hover:bg-gray-800 transition"
+            >
+              Explorar academias
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
       <section className="bg-gray-900 text-white py-20 px-6">
         <div className="max-w-5xl mx-auto text-center">
           <motion.h2
@@ -110,7 +147,6 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* CTA final */}
       <section className="bg-white py-20 px-6 text-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
@@ -120,13 +156,15 @@ const HomePage = () => {
         >
           <h2 className="text-3xl font-bold mb-6">Pronto para melhorar sua jornada fitness?</h2>
           <p className="text-gray-600 mb-8 max-w-xl mx-auto">Crie sua conta gratuitamente e tenha acesso ao melhor da sua região.</p>
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ type: 'spring', stiffness: 300 }}
-          >
-            <Link to="/cadastro" className="bg-black text-white font-bold py-3 px-6 rounded-full hover:bg-gray-800 transition">Quero me cadastrar</Link>
-          </motion.div>
+          {!user && !loading && (
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: 'spring', stiffness: 300 }}
+            >
+              <Link to="/cadastro" className="bg-black text-white font-bold py-3 px-6 rounded-full hover:bg-gray-800 transition">Quero me cadastrar</Link>
+            </motion.div>
+          )}
         </motion.div>
       </section>
     </>

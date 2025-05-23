@@ -31,14 +31,13 @@ export default function DietasPage() {
     });
   };
 
-  const buscarDietas = async (e) => {
-    if (e) e.preventDefault();
+  const buscarDietas = async () => {
     setLoading(true);
     setError(null);
 
     const params = new URLSearchParams();
     if (search) params.append('search', search);
-    filtros.tipos.forEach(tipo => params.append('tipos', tipo)); // envia múltiplos 'tipos'
+    filtros.tipos.forEach(tipo => params.append('tipos', tipo));
 
     try {
       const res = await axios.get(`/dieta/filtro?${params.toString()}`);
@@ -53,7 +52,7 @@ export default function DietasPage() {
 
   useEffect(() => {
     buscarDietas();
-  }, []);
+  }, [search, filtros]);
 
   return (
     <>
@@ -61,7 +60,7 @@ export default function DietasPage() {
         <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-6">Encontre uma Dieta</h2>
 
-          <form onSubmit={buscarDietas} className="flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto mb-4">
+          <div className="flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto mb-4">
             <input
               type="search"
               placeholder="Digite o título ou descrição"
@@ -69,14 +68,7 @@ export default function DietasPage() {
               onChange={(e) => setSearch(e.target.value)}
               className="flex-grow min-w-[250px] px-4 py-2 rounded text-black"
             />
-            <button
-              type="submit"
-              className="bg-white text-black font-semibold px-6 py-2 rounded hover:bg-gray-200"
-              disabled={loading}
-            >
-              {loading ? 'Buscando...' : 'Buscar'}
-            </button>
-          </form>
+          </div>
 
           <div className="flex flex-wrap justify-center gap-6 max-w-4xl mx-auto text-left">
             {Object.entries(opcoesFiltro).map(([categoria, opcoes]) => (
@@ -99,7 +91,6 @@ export default function DietasPage() {
         </div>
       </section>
 
-      {/* Lista de dietas */}
       <section className="py-16 px-6 bg-white min-h-screen">
         <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {loading && (
