@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import api from '../services/api';
 import { motion } from 'framer-motion';
 import SkeletonParagraphs from '../components/skeletons/SkeletonParagraphs';
 import { useGetUser } from '../hooks/useGetUser';
 import NewReview from '../components/NewReview';
 import Reviews from '../components/Reviews';
+import { toast } from 'sonner';
 
 const diaLabel = {
   SEGUNDA: 'Segunda-feira',
@@ -36,6 +37,7 @@ const DetalhesAcademiaPage = () => {
   const { id } = useParams();
   const [academia, setAcademia] = useState(null);
   const { user } = useGetUser();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAcademia = async () => {
@@ -44,6 +46,8 @@ const DetalhesAcademiaPage = () => {
         setAcademia(res.data);
       } catch (error) {
         setAcademia(null);
+        toast.error('Erro ao encontrar academia');
+        navigate('/academias')
       }
     };
 

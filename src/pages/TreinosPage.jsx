@@ -2,16 +2,17 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import SkeletonParagraphs from '../components/skeletons/SkeletonParagraphs';
+import { toast } from 'sonner';
+import api from '../services/api';
 
-const filtrosPadrao = {
-  tipos: []
-};
+const filtrosPadrao = { tipos: [] };
 
 const opcoesFiltro = {
   tipos: ['MUSCULACAO', 'FUNCIONAL', 'CROSSFIT', 'CALISTENIA', 'HIIT']
 };
 
-export default function TreinosPage() {
+const TreinosPage = () => {
   const [treinos, setTreinos] = useState([]);
   const [search, setSearch] = useState('');
   const [filtros, setFiltros] = useState(filtrosPadrao);
@@ -21,7 +22,7 @@ export default function TreinosPage() {
 
   const handleCheckbox = (categoria, valor) => {
     setFiltros(prev => {
-      const atual = prev[categoria];
+      const atual = prev[categoria] || [];
       return {
         ...prev,
         [categoria]: atual.includes(valor)
@@ -40,10 +41,18 @@ export default function TreinosPage() {
     filtros.tipos.forEach(tipo => params.append('tipos', tipo));
 
     try {
-      const res = await axios.get(`/treino/filtro?${params.toString()}`);
-      setTreinos(res.data);
+      const res = await api.get(`/treino/filtro?${params.toString()}`);
+
+      const data = res.data;
+
+      if (Array.isArray(data)) {
+        setTreinos(data);
+      } else {
+        setTreinos([]);
+      }
+
     } catch (err) {
-      setError('Erro ao carregar treinos.');
+      toast.error('Erro ao buscar treinos!')
       setTreinos([]);
     } finally {
       setLoading(false);
@@ -79,7 +88,7 @@ export default function TreinosPage() {
                     <input
                       type="checkbox"
                       className="mr-2"
-                      checked={filtros[categoria].includes(opcao)}
+                      checked={(filtros[categoria] || []).includes(opcao)}
                       onChange={() => handleCheckbox(categoria, opcao)}
                     />
                     {opcao.charAt(0).toUpperCase() + opcao.slice(1).toLowerCase()}
@@ -93,15 +102,18 @@ export default function TreinosPage() {
 
       <section className="py-16 px-6 bg-white min-h-screen">
         <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+
           {loading && (
-            <p className="col-span-full text-center text-gray-500">Carregando treinos...</p>
+            <div className="col-span-full flex justify-center">
+              <SkeletonParagraphs />
+            </div>
           )}
 
           {!loading && treinos.length === 0 && (
             <p className="col-span-full text-center text-gray-500">Nenhum treino encontrado.</p>
           )}
 
-          {!loading && treinos.map((treino, index) => (
+          {!loading && Array.isArray(treinos) && treinos.map((treino, index) => (
             <motion.div
               key={treino.id}
               initial={{ opacity: 0, y: 20 }}
@@ -116,11 +128,13 @@ export default function TreinosPage() {
             >
               <h3 className="text-xl font-bold mb-1 text-black">{treino.nome}</h3>
               <p className="text-sm text-gray-600 mb-3 line-clamp-3">{treino.descricao}</p>
-              {/* Aqui você pode colocar outros detalhes que desejar */}
+              {/* Outros detalhes podem ser inseridos aqui */}
             </motion.div>
           ))}
         </div>
       </section>
     </>
   );
-}
+};
+
+export default TreinosPage;

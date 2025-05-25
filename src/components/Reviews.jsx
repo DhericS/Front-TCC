@@ -13,7 +13,7 @@ const Reviews = ({ tipoEntidade, entidadeId }) => {
         
         setLoading(true);
         try {
-            const res = await api.get('/avaliacoes', {
+            const res = await api.get(`/avaliacoes`, {
                 params: { tipoEntidade, entidadeId }
             });
             setAvaliacoes(res.data);
@@ -25,7 +25,10 @@ const Reviews = ({ tipoEntidade, entidadeId }) => {
       };
 
     fetchAvaliacoes();
+    console.log(avaliacoes);
   }, [entidadeId]);
+
+
 
     const renderStars = (nota) => {
         return Array.from({ length: 5 }, (_, i) => (

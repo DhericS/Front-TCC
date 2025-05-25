@@ -6,6 +6,8 @@ import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import api from '../services/api';
 import { useGetUser } from '../hooks/useGetUser';
+import Reviews from '../components/Reviews';
+import NewReview from '../components/NewReview';
 
 export default function DetalhesPersonalPage() {
   const { id } = useParams();
@@ -111,11 +113,17 @@ export default function DetalhesPersonalPage() {
         <div className="mt-12">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Avaliações</h2>
           {personal?.id ? (
-            <Avaliacoes
-              entidadeId={personal.id}
-              tipoEntidade="PERSONAL"
-              usuarioLogadoId={user?.id}
-            />
+            <div className='flex flex-col gap-4'>
+              <Reviews
+                entidadeId={personal?.id}
+                tipoEntidade={'PERSONAL'}
+              />
+              <NewReview 
+                entidadeId={personal?.id}
+                tipoEntidade={'PERSONAL'}
+                user={user}
+              />
+            </div>
           ) : (
             <p>Carregando avaliações...</p>
           )}

@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: .
+    container_name: frontend-tcc-container
+    ports:
+      - "80:80"
+    environment:
+      - VITE_API_BASE_URL=https://backend.guidesfit.com.br

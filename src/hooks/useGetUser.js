@@ -3,6 +3,7 @@ import { getToken } from '../utils/localStorageUtil';
 import { toast } from 'sonner';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
+import api from '../services/api';
 
 export const useGetUser = () => {
     const [user, setUser] = useState(null);
@@ -28,7 +29,7 @@ export const useGetUser = () => {
         const fetchUser = async () => {
             setLoading(true);
             try {
-                const res = await axios.get('/usuarios/me', {
+                const res = await api.get('/usuarios/me', {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }});

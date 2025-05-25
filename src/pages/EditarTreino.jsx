@@ -62,7 +62,7 @@ const EditarTreino = () => {
     setLoadingSubmit(true);
 
     try {
-      await axios.put(`http://localhost:8080/treino/${id}`, {
+      await axios.put(`http://backend.guidesfit.com.br/treino/${id}`, {
         ...form,
         exercicios: exercicios,
         personalId: form.personal.id,

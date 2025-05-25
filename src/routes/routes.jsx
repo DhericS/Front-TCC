@@ -25,6 +25,7 @@ import DetalhesAcademiaExternaPage from "../pages/DetalhesAcademiaExternaPage";
 import DetalhesPersonalPage from '../pages/DetalhesPersonalPage';
 import ResetSenhaPage from '../pages/ResetSenhaPage';
 import EsquecerSenhaPage from '../pages/EsquecerSenhaPage';
+import NotFound from '../pages/NotFound';
 
 const AppRoutes = () => {
   return (
@@ -42,8 +43,8 @@ const AppRoutes = () => {
         <Route path="/personais" element={<PersonaisPage />} />
         <Route path="/personais/:id" element={<DetalhesPersonalPage />} />
         
-        <Route path="/treinos/:id" element={<DetalhesTreinoPage />} />
         <Route path="/treinos" element={<TreinosPage />} />
+        <Route path="/treinos/:id" element={<DetalhesTreinoPage />} />
         <Route path="/treinos/:id/editar" element={<EditarTreino />} />
         
         <Route path="/planos/cadastrar" element={<CadastrarPlanoPage />} />
@@ -62,7 +63,10 @@ const AppRoutes = () => {
         <Route path="/esquecer-senha" element={<EsquecerSenhaPage />} />
         <Route path="/redefinir-senha" element={<ResetSenhaPage />} />
         <Route path="/login" element={<LoginPage />} />
+
+        <Route path='*' element={<NotFound />} />
       </Route>
+
     </Routes>
   );
 };

@@ -3,6 +3,11 @@ import axios from 'axios';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useGetUser } from '../hooks/useGetUser';
 import Avaliacoes from '../components/Avaliacoes';
+import SkeletonParagraphs from '../components/skeletons/SkeletonParagraphs';
+import Reviews from '../components/Reviews';
+import NewReview from '../components/NewReview';
+import { toast } from 'sonner';
+import api from '../services/api';
 
 const gruposMuscularesLabels = {
   PEITO: 'Peito',
@@ -17,19 +22,17 @@ const DietasTreinoPage = () => {
   const navigate = useNavigate();
 
   const [treino, setTreino] = useState(null);
-  const { user, loading: loadingUsuario } = useGetUser(); // Obtendo usuário logado
+  const { user, loading: loadingUsuario } = useGetUser();
 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchTreino = async () => {
       try {
-        const res = await axios.get(`/treino/${id}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        const res = await api.get(`/treino/${id}`);
         setTreino(res.data);
       } catch (err) {
-        alert('Erro ao carregar treino.');
+        toast.error('Erro ao carregar treino.');
         navigate('/treinos');
       } finally {
         setLoading(false);
@@ -38,10 +41,23 @@ const DietasTreinoPage = () => {
     fetchTreino();
   }, [id, navigate]);
 
-  if (loading) return <div className="p-8 text-center">Carregando treino...</div>;
+  if (loading) {
+    return (
+      <div className="w-full flex justify-center mt-6">
+        <SkeletonParagraphs />
+      </div>
+    )
+  }
+
   if (!treino) return <div className="p-8 text-center text-red-600">Treino não encontrado.</div>;
 
-  if (loadingUsuario) return <div className="p-8 text-center">Carregando usuário...</div>;
+  if (loadingUsuario) {
+    return (
+      <div className="w-full flex justify-center mt-6">
+        <SkeletonParagraphs />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -63,7 +79,7 @@ const DietasTreinoPage = () => {
                   className="bg-white border rounded-lg shadow overflow-hidden"
                 >
                   <img
-                    src={exercicio.imagemUrl || '/assets/imagens/default-exercise.jpg'}
+                    src={exercicio.imagemUrl || '/assets/imagens/default-background.jpg'}
                     alt={exercicio.nome}
                     className="w-full h-48 object-cover"
                   />
@@ -88,12 +104,17 @@ const DietasTreinoPage = () => {
           ← Voltar para lista de treinos
         </Link>
 
-        {/* Seção de Avaliações */}
-        <Avaliacoes
-          entidadeId={treino.id}
-          tipoEntidade="TREINO"
-          usuarioLogadoId={user?.id}
-        />
+        <div className='flex flex-col gap-3'>
+          <Reviews 
+            entidadeId={treino.id}
+            tipoEntidade={'TREINO'}
+          />
+          <NewReview 
+            entidadeId={treino.id}
+            tipoEntidade={'TREINO'}
+            user={user}
+          />
+        </div>
       </div>
     </div>
   );

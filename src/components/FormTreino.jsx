@@ -39,7 +39,7 @@ const FormTreino = ({ userId, onSubmit }) => {
 
     setLoading(true);
     try {
-        const res = await axios.post('http://localhost:8080/treino', {
+        const res = await axios.post('http://backend.guidesfit.com.br/treino', {
             ...form,
             exercicios,
             userId: userId,

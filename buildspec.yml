@@ -1,0 +1,33 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo "Instalando dependências do Node.js..."
+      - npm install
+
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 568682978877.dkr.ecr.us-east-1.amazonaws.com
+      - echo Logging in to Docker Hub...
+      - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
+
+  build:
+    commands:
+      - echo Buildando aplicação Vite...
+      - npm run build
+      - echo Buildando imagem Docker do frontend...
+      - docker build -t academia-app/frontend-tcc .
+      - docker tag academia-app/frontend-tcc:latest 568682978877.dkr.ecr.us-east-1.amazonaws.com/academia-app/frontend-tcc:latest
+
+  post_build:
+    commands:
+      - echo Enviando imagem para o Amazon ECR...
+      - docker push 568682978877.dkr.ecr.us-east-1.amazonaws.com/academia-app/frontend-tcc:latest
+      - echo Criando imagedefinitions.json...
+      - printf '[{"name":"frontend-tcc","imageUri":"568682978877.dkr.ecr.us-east-1.amazonaws.com/academia-app/frontend-tcc:latest"}]' > imagedefinitions.json
+
+artifacts:
+  files:
+    - imagedefinitions.json

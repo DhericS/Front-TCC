@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import api from '../services/api';
+import SkeletonParagraphs from '../components/skeletons/SkeletonParagraphs';
 
 const filtrosPadrao = {
   tipos: []
@@ -21,7 +23,7 @@ export default function DietasPage() {
 
   const handleCheckbox = (categoria, valor) => {
     setFiltros(prev => {
-      const atual = prev[categoria];
+      const atual = prev[categoria] || [];
       return {
         ...prev,
         [categoria]: atual.includes(valor)
@@ -40,8 +42,9 @@ export default function DietasPage() {
     filtros.tipos.forEach(tipo => params.append('tipos', tipo));
 
     try {
-      const res = await axios.get(`/dieta/filtro?${params.toString()}`);
-      setDietas(res.data);
+      const res = await api.get(`/dieta/filtro?${params.toString()}`);
+      const data = Array.isArray(res.data) ? res.data : [];
+      setDietas(data);
     } catch (err) {
       setError('Erro ao carregar dietas.');
       setDietas([]);
@@ -79,7 +82,7 @@ export default function DietasPage() {
                     <input
                       type="checkbox"
                       className="mr-2"
-                      checked={filtros[categoria].includes(opcao)}
+                      checked={filtros[categoria]?.includes(opcao)}
                       onChange={() => handleCheckbox(categoria, opcao)}
                     />
                     {opcao}
@@ -94,7 +97,9 @@ export default function DietasPage() {
       <section className="py-16 px-6 bg-white min-h-screen">
         <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {loading && (
-            <p className="col-span-full text-center text-gray-500">Carregando dietas...</p>
+            <div className="col-span-full flex justify-center">
+              <SkeletonParagraphs />
+            </div>
           )}
 
           {!loading && dietas.length === 0 && (

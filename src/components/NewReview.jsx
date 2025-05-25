@@ -31,6 +31,7 @@ const NewReview = ({ tipoEntidade, entidadeId, user }) => {
                 entidadeId,
             });
             toast.success('Avaliação Salva com sucesso!');
+            resetFormulario();
         } catch (e) {
             toast.error('Erro ao salvar avaliação!');
             console.log(e)

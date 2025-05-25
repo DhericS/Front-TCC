@@ -23,7 +23,7 @@ const PerfilAcademiaPage = ({ user }) => {
         });
         setAcademias(res.data);
       } catch (error) {
-        console.error('Erro ao buscar academias:', error);
+        toast.error('Erro ao buscar academias');
       } finally {
         setLoading(false);
       }
@@ -32,10 +32,13 @@ const PerfilAcademiaPage = ({ user }) => {
     fetchAcademias();
   }, [user.id]);
 
+  console.log(user);
+
   const handleDeleteUser = async () => {
     try {
       setHandleLoading(true);
-      await axios.delete(`/usuarios/${user.id}`, {
+      const res = await axios.delete(`/usuarios/${user.id}`, {
+        params: { userType: 'personal' },
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       localStorage.removeItem('token');

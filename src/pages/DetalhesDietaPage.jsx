@@ -3,12 +3,15 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useGetUser } from '../hooks/useGetUser';
 import api from '../services/api';
 import Avaliacoes from '../components/Avaliacoes';
+import SkeletonParagraphs from '../components/skeletons/SkeletonParagraphs';
+import Reviews from '../components/Reviews';
+import NewReview from '../components/NewReview';
 
 export default function DetalhesDietaPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [dieta, setDieta] = useState(null);
-  const { user, loading: loadingUsuario } = useGetUser(); // Obtém o usuário logado
+  const { user, loading: loadingUsuario } = useGetUser();
 
   useEffect(() => {
     api.get(`/dieta/${id}`)
@@ -16,10 +19,20 @@ export default function DetalhesDietaPage() {
       .catch(() => setDieta(null));
   }, [id]);
 
-  if (!dieta) return <p>Carregando dieta...</p>;
+  if (!dieta) {
+    return (
+      <div className='w-full flex justify-center mt-6'>
+        <SkeletonParagraphs />
+      </div>
+    );
+  };
 
   if (loadingUsuario) {
-    return <p>Carregando usuário...</p>;
+    return (
+      <div className='w-full flex justify-center mt-6'>
+        <SkeletonParagraphs />
+      </div>
+    );
   }
 
   return (
@@ -59,11 +72,23 @@ export default function DetalhesDietaPage() {
       </button>
 
       {/* Seção de avaliações */}
-      <Avaliacoes
+      {/* <Avaliacoes
         entidadeId={dieta.id}
         tipoEntidade="DIETA"
         usuarioLogadoId={user?.id}
-      />
+      /> */}
+
+      <div className='flex flex-col gap-3'>
+        <Reviews 
+          entidadeId={dieta.id}
+          tipoEntidade={'DIETA'}
+        />
+        <NewReview 
+          entidadeId={dieta.id}
+          tipoEntidade={'DIETA'}
+          user={user}
+        />
+      </div>
     </div>
   );
 }

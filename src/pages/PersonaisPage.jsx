@@ -3,6 +3,7 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import SkeletonParagraphs from '../components/skeletons/SkeletonParagraphs';
+import api from '../services/api';
 
 const container = {
   hidden: { opacity: 0 },
@@ -31,7 +32,7 @@ export default function PersonaisPage() {
     setError(null);
 
     try {
-      const res = await axios.get('/usuarios?tipoUsuario=personal');
+      const res = await api.get('/usuarios?tipoUsuario=personal');
       if (Array.isArray(res.data)) {
         const filtrados = res.data.filter((p) =>
           p.nome.toLowerCase().includes(search.toLowerCase()) ||
