@@ -13,6 +13,9 @@ const PerfilAdminPage = ({ user }) => {
       await axios.delete(`/usuarios/${user.id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        params: {
+          userType: user.tipoUsuario
         }
       });
       localStorage.removeItem('token');

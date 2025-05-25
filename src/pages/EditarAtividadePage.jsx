@@ -3,6 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import Menu from '../components/Menu';
 import Rodape from '../components/Rodape';
+import SkeletonDefault from '../components/skeletons/SkeletonDefault';
+import SkeletonParagraphs from '../components/skeletons/SkeletonParagraphs';
+import { toast } from 'sonner';
 
 const diasSemana = [
   'SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO', 'DOMINGO'
@@ -20,6 +23,7 @@ const EditarAtividadePage = () => {
 
   const [form, setForm] = useState({ nome: '', diaSemana: '', horario: '', academiaId: null });
   const [loading, setLoading] = useState(true);
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
 
   useEffect(() => {
     api.get(`/atividades/${id}`)
@@ -43,28 +47,19 @@ const EditarAtividadePage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setLoadingSubmit(true);
       await api.put(`/atividades/${id}`, form);
-      alert('Atividade atualizada com sucesso.');
-      navigate(`/academias/${form.academiaId}`);
+      toast.success('Atividade atualizada com sucesso.');
+      navigate(`/academias/${form.academiaId}/editar`);
     } catch (error) {
-      alert('Erro ao atualizar atividade.');
-    }
-  };
-
-  const handleDelete = async () => {
-    if (window.confirm('Deseja realmente excluir esta atividade?')) {
-      try {
-        await api.delete(`/atividades/${id}`);
-        alert('Atividade excluída com sucesso.');
-        navigate(`/academias/${form.academiaId}`);
-      } catch {
-        alert('Erro ao deletar atividade.');
-      }
+      toast.error('Erro ao atualizar atividade.');
+    } finally {
+      setLoadingSubmit(false);
     }
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Carregando...</div>;
+    return <div className="min-h-screen flex items-center justify-center"><SkeletonParagraphs /></div>;
   }
 
   return (
@@ -110,15 +105,16 @@ const EditarAtividadePage = () => {
             </select>
 
             <div className="flex justify-between gap-2">
-              <button type="submit" className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800">
-                Salvar Alterações
+              <button type="submit" className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800 disabled:opacity-50" disabled={loadingSubmit}>
+                {loadingSubmit ? 'Atualizando...' : 'Atualizar Atividade'}
               </button>
               <button
                 type="button"
-                onClick={handleDelete}
-                className="border border-black text-black px-6 py-2 rounded hover:bg-black hover:text-white"
+                onClick={() => navigate(-1)}
+                className="bg-gray-300 text-black px-6 py-2 rounded hover:bg-gray-400 disabled:opacity-50"
+                disabled={loadingSubmit}
               >
-                Deletar
+                Cancelar
               </button>
             </div>
           </form>

@@ -16,6 +16,7 @@ const Menu = () => {
   }, []);
 
   const handleLogout = () => {
+    setIsModalLogoutIsOpen(false);
     localStorage.removeItem('token');
     navigate('/login');
   };
@@ -60,43 +61,45 @@ const Menu = () => {
   );
 
   return (
-    <header role="banner" className="flex items-center justify-between p-4 shadow bg-white">
-      <div className="logo">
-        <Link to="/">
-          <img
-            src="/assets/imagens/logo2.png"
-            alt="Logo Guides Fit"
-            style={{ height: '100px', width: 'auto' }}
-          />
-        </Link>
-      </div>
+    <>
+    
+      <header role="banner" className="flex items-center justify-between p-4 shadow bg-white">
+        <div className="logo">
+          <Link to="/">
+            <img
+              src="/assets/imagens/logo2.png"
+              alt="Logo Guides Fit"
+              style={{ height: '100px', width: 'auto' }}
+            />
+          </Link>
+        </div>
 
-      <nav role="navigation" aria-label="Navegação principal">
-        {!isMobile && renderLinks("flex gap-6 font-medium")}
-      </nav>
+        <nav role="navigation" aria-label="Navegação principal">
+          {!isMobile && renderLinks("flex gap-6 font-medium")}
+        </nav>
 
-      {isMobile && (
-        <>
-          <div
-            className="nav-icon cursor-pointer space-y-1"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Abrir menu"
-          >
-            <span className="block w-6 h-0.5 bg-black"></span>
-            <span className="block w-6 h-0.5 bg-black"></span>
-            <span className="block w-6 h-0.5 bg-black"></span>
-          </div>
-
-          {menuOpen && (
-            <div className="nav-small-views absolute top-20 right-4 bg-white shadow p-4 z-50 rounded">
-              <nav role="navigation" aria-label="Menu mobile">
-                {renderLinks("flex flex-col gap-3")}
-              </nav>
+        {isMobile && (
+          <>
+            <div
+              className="nav-icon cursor-pointer space-y-1"
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-label="Abrir menu"
+            >
+              <span className="block w-6 h-0.5 bg-black"></span>
+              <span className="block w-6 h-0.5 bg-black"></span>
+              <span className="block w-6 h-0.5 bg-black"></span>
             </div>
-          )}
-        </>
-      )}
 
+            {menuOpen && (
+              <div className="nav-small-views absolute top-20 right-4 bg-white shadow p-4 z-50 rounded">
+                <nav role="navigation" aria-label="Menu mobile">
+                  {renderLinks("flex flex-col gap-3")}
+                </nav>
+              </div>
+            )}
+          </>
+        )}
+      </header>
       <ModalDialog 
         description={"Você tem certeza que deseja sair?"}
         isOpen={isModalLogoutIsOpen}
@@ -105,7 +108,7 @@ const Menu = () => {
         onConfirm={handleLogout}
         loading={false}
       />
-    </header>
+    </>
   );
 };
 

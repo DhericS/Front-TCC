@@ -1,50 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import CardTreino from '../components/CardTreino';
-
-const Cardio = {
-  CORRIDA: { nome: 'Esteira' },
-  BICICLETA: { nome: 'Bicicleta ergométrica' },
-  ESCADA: { nome: 'Escada simuladora' },
-  REMO: { nome: 'Simulador de remo' },
-  ELIPTICO: { nome: 'Elíptico' },
-};
-
-const Hipertrofia_Performace = {
-  PESO_LIVRE: { nome: 'Área de peso livre' },
-  MAQUINAS: { nome: 'Máquinas de musculação' },
-  SUPINO: { nome: 'Bancos de supino' },
-  ANILHAS: { nome: 'Suporte para anilhas' },
-  RACKS: { nome: 'Power racks' },
-};
-
-const Tipos = {
-  MUSCULACAO: { nome: 'Musculação' },
-  FUNCIONAL: { nome: 'Treinamento funcional' },
-  CROSSFIT: { nome: 'CrossFit' },
-  CALISTENIA: { nome: 'Calistenia' },
-  HIIT: { nome: 'Treino HIIT' },
-};
+import { useNavigate } from 'react-router-dom';
 
 const filtrosPadrao = {
-  cardio: [],
-  hipertrofia: [],
-  tipoTreino: [],
+  tipos: []
 };
 
-const TreinosPage = () => {
-  const navigate = useNavigate();
+const opcoesFiltro = {
+  tipos: ['MUSCULACAO', 'FUNCIONAL', 'CROSSFIT', 'CALISTENIA', 'HIIT']
+};
 
+export default function TreinosPage() {
+  const [treinos, setTreinos] = useState([]);
   const [search, setSearch] = useState('');
   const [filtros, setFiltros] = useState(filtrosPadrao);
-  const [treinos, setTreinos] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const handleCheckbox = (categoria, valor) => {
     setFiltros(prev => {
-      const atual = prev[categoria] || [];
+      const atual = prev[categoria];
       return {
         ...prev,
         [categoria]: atual.includes(valor)
@@ -56,17 +33,17 @@ const TreinosPage = () => {
 
   const buscarTreinos = async () => {
     setLoading(true);
+    setError(null);
 
     const params = new URLSearchParams();
     if (search) params.append('search', search);
-    Object.entries(filtros).forEach(([key, valores]) => {
-      valores.forEach(v => params.append(key, v));
-    });
+    filtros.tipos.forEach(tipo => params.append('tipos', tipo));
 
     try {
       const res = await axios.get(`/treino/filtro?${params.toString()}`);
-      setTreinos(Array.isArray(res.data) ? res.data : []);
-    } catch {
+      setTreinos(res.data);
+    } catch (err) {
+      setError('Erro ao carregar treinos.');
       setTreinos([]);
     } finally {
       setLoading(false);
@@ -76,10 +53,6 @@ const TreinosPage = () => {
   useEffect(() => {
     buscarTreinos();
   }, [search, filtros]);
-
-  const handleVerDetalhes = (treino) => {
-    navigate(`/treinos/${treino.id}`);
-  };
 
   return (
     <>
@@ -98,50 +71,22 @@ const TreinosPage = () => {
           </div>
 
           <div className="flex flex-wrap justify-center gap-6 max-w-4xl mx-auto text-left">
-            <div className="min-w-[10rem]">
-              <h4 className="font-bold mb-2 uppercase text-sm">Cardios</h4>
-              {Object.entries(Cardio).map(([key, val]) => (
-                <label key={key} className="block text-white text-sm cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="mr-2"
-                    checked={filtros.cardio.includes(key)}
-                    onChange={() => handleCheckbox('cardio', key)}
-                  />
-                  {val.nome}
-                </label>
-              ))}
-            </div>
-
-            <div className="min-w-[10rem]">
-              <h4 className="font-bold mb-2 uppercase text-sm">Áreas de Hipertrofia</h4>
-              {Object.entries(Hipertrofia_Performace).map(([key, val]) => (
-                <label key={key} className="block text-white text-sm cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="mr-2"
-                    checked={filtros.hipertrofia.includes(key)}
-                    onChange={() => handleCheckbox('hipertrofia', key)}
-                  />
-                  {val.nome}
-                </label>
-              ))}
-            </div>
-
-            <div className="min-w-[10rem]">
-              <h4 className="font-bold mb-2 uppercase text-sm">Tipos de Treino</h4>
-              {Object.entries(Tipos).map(([key, val]) => (
-                <label key={key} className="block text-white text-sm cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="mr-2"
-                    checked={filtros.tipoTreino.includes(key)}
-                    onChange={() => handleCheckbox('tipoTreino', key)}
-                  />
-                  {val.nome}
-                </label>
-              ))}
-            </div>
+            {Object.entries(opcoesFiltro).map(([categoria, opcoes]) => (
+              <div key={categoria} className="min-w-[10rem]">
+                <h4 className="font-bold mb-2 uppercase text-sm">{categoria}</h4>
+                {opcoes.map(opcao => (
+                  <label key={opcao} className="block text-white text-sm cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="mr-2"
+                      checked={filtros[categoria].includes(opcao)}
+                      onChange={() => handleCheckbox(categoria, opcao)}
+                    />
+                    {opcao.charAt(0).toUpperCase() + opcao.slice(1).toLowerCase()}
+                  </label>
+                ))}
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -156,33 +101,26 @@ const TreinosPage = () => {
             <p className="col-span-full text-center text-gray-500">Nenhum treino encontrado.</p>
           )}
 
-          {!loading && treinos.map((treino) => (
+          {!loading && treinos.map((treino, index) => (
             <motion.div
               key={treino.id}
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              className="bg-gray-100 rounded-lg overflow-hidden shadow hover:shadow-lg transition cursor-pointer"
-              onClick={() => handleVerDetalhes(treino)}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
+              viewport={{ once: true }}
+              className="bg-gray-100 rounded-lg overflow-hidden shadow hover:shadow-lg transition cursor-pointer p-4"
+              onClick={() => navigate(`/treinos/${treino.id}`)}
               role="button"
               tabIndex={0}
-              onKeyPress={e => { if (e.key === 'Enter') handleVerDetalhes(treino); }}
+              onKeyPress={e => { if (e.key === 'Enter') navigate(`/treinos/${treino.id}`); }}
             >
-              <img
-                src={treino.imagemUrl || '/assets/imagens/treino1.jpg'}
-                alt={treino.nome}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4">
-                <h3 className="text-xl font-bold mb-1">{treino.nome}</h3>
-                <p className="text-sm text-gray-600 line-clamp-2">{treino.descricao}</p>
-              </div>
+              <h3 className="text-xl font-bold mb-1 text-black">{treino.nome}</h3>
+              <p className="text-sm text-gray-600 mb-3 line-clamp-3">{treino.descricao}</p>
+              {/* Aqui você pode colocar outros detalhes que desejar */}
             </motion.div>
           ))}
         </div>
       </section>
     </>
   );
-};
-
-export default TreinosPage;
+}

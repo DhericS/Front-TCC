@@ -2,23 +2,45 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useGetUser } from '../hooks/useGetUser';
-import { s } from 'framer-motion/client';
 import { toast } from 'sonner';
 
 const CadastrarAcademiaPage = () => {
   const navigate = useNavigate();
   const { user, loading } = useGetUser();
   const [loadingSubmit, setLoadingSubmit] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const [form, setForm] = useState({
     nome: '',
     endereco: '',
     telefone: '',
     tipoAcad: '',
+    imagemUrl: ''  
   });
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      setUploadingImage(true);
+      const res = await api.post('/academia/upload-imagem-temp', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setForm(prev => ({ ...prev, imagemUrl: res.data.url }));
+      toast.success('Imagem carregada com sucesso!');
+    } catch (error) {
+      toast.error('Erro ao carregar imagem.');
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -28,7 +50,7 @@ const CadastrarAcademiaPage = () => {
       await api.post('/academia', {
         ...form,
         id: user.id,
-        planos : [],
+        planos: [],
       }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
@@ -45,6 +67,7 @@ const CadastrarAcademiaPage = () => {
     <section className="bg-white py-16 px-6">
       <div className="max-w-xl mx-auto">
         <h2 className="text-2xl font-bold mb-6 text-center">Cadastrar Nova Academia</h2>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
@@ -84,7 +107,31 @@ const CadastrarAcademiaPage = () => {
             <option value="CROSSFIT">Crossfit</option>
             <option value="CONVENCIONAL">Convencional</option>
           </select>
-          <button type="submit" className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800 disabled:opacity-50" disabled={loading || loadingSubmit}>
+
+          {/* Upload de imagem */}
+          <div>
+            <label className="block mb-2 font-semibold">Imagem da Academia</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="w-full"
+              disabled={uploadingImage}
+            />
+            {form.imagemUrl && (
+              <img
+                src={form.imagemUrl}
+                alt="Preview"
+                className="mt-2 w-48 h-32 object-cover rounded"
+              />
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800 disabled:opacity-50"
+            disabled={loading || loadingSubmit || uploadingImage}
+          >
             {loading || loadingSubmit ? 'Carregando...' : 'Cadastrar Academia'}
           </button>
         </form>

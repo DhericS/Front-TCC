@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import { toast } from 'sonner';
+import SkeletonParagraphs from '../components/skeletons/SkeletonParagraphs';
 
 const EditarPlanoPage = () => {
   const { id } = useParams();
@@ -8,6 +10,7 @@ const EditarPlanoPage = () => {
   const [form, setForm] = useState({ nome: '', descricao: '', preco: '' });
   const [loading, setLoading] = useState(true);
   const [plano, setPlano] = useState(null);
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
 
   useEffect(() => {
     api.get(`/planos/${id}`)
@@ -30,31 +33,22 @@ const EditarPlanoPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setLoadingSubmit(true);
       await api.put(`/planos/${id}`, {
         ...form,
         academiaId: plano.academiaId || plano.academia_id
       });
-      alert('Plano atualizado com sucesso.');
+      toast.success('Plano atualizado com sucesso.');
       navigate(-1);
     } catch (error) {
-      alert('Erro ao atualizar plano.');
-    }
-  };
-
-  const handleDelete = async () => {
-    if (window.confirm('Tem certeza que deseja excluir este plano?')) {
-      try {
-        await api.delete(`/planos/${id}`);
-        alert('Plano deletado com sucesso.');
-        navigate(-1);
-      } catch {
-        alert('Erro ao deletar plano.');
-      }
+      toast.error('Erro ao atualizar plano.');
+    } finally {
+      setLoadingSubmit(false);
     }
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Carregando...</div>;
+    return <div className="min-h-screen flex items-center justify-center"><SkeletonParagraphs /></div>;
   }
 
   return (
@@ -90,15 +84,16 @@ const EditarPlanoPage = () => {
               className="w-full border px-4 py-2 rounded"
             />
             <div className="flex justify-between">
-              <button type="submit" className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800">
-                Salvar Alterações
+              <button type="submit" className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800 disabled:opacity-50" disabled={loadingSubmit}>
+                {loadingSubmit ? 'Atualizando...' : 'Atualizar'}
               </button>
               <button
                 type="button"
-                onClick={handleDelete}
-                className="border border-black text-black px-6 py-2 rounded hover:bg-black hover:text-white"
+                onClick={() => navigate(-1)}
+                className="bg-gray-300 text-black px-6 py-2 rounded hover:bg-gray-400 disabled:opacity-50"
+                disabled={loadingSubmit}
               >
-                Deletar Plano
+                Cancelar
               </button>
             </div>
           </form>

@@ -35,31 +35,34 @@ const AppRoutes = () => {
 
         <Route path="/academias" element={<AcademiasPage />} />
         <Route path="/academias/:id/editar" element={<EditarAcademia />} />
+        <Route path="/academias-externas/:placeId" element={<DetalhesAcademiaExternaPage />} /> 
+        <Route path="/academias/:id" element={<DetalhesAcademiaPage />} />
+        <Route path="/cadastrar-academia" element={<CadastrarAcademiaPage />} />
 
         <Route path="/personais" element={<PersonaisPage />} />
+        <Route path="/personais/:id" element={<DetalhesPersonalPage />} />
+        
+        <Route path="/treinos/:id" element={<DetalhesTreinoPage />} />
         <Route path="/treinos" element={<TreinosPage />} />
+        <Route path="/treinos/:id/editar" element={<EditarTreino />} />
+        
         <Route path="/planos/cadastrar" element={<CadastrarPlanoPage />} />
         <Route path="/planos/editar/:id" element={<EditarPlanoPage />} />
+
         <Route path="/atividades/cadastrar" element={<CadastrarAtividadePage />} />
         <Route path="/atividades/editar/:id" element={<EditarAtividadePage />} />
+
+        <Route path="/dietas" element={<DietasPage />} />
+        <Route path="/dietas/:id" element={<DetalhesDietaPage />} />
+        <Route path="/dietas/:id/editar" element={<EditarDieta />} />
+
         <Route path="/cadastro" element={<CadastroPage />}/>
         <Route path="/perfil" element={<PerfilRouter />} />
-        <Route path="/dietas/:id/editar" element={<EditarDieta />} />
         <Route path="/perfil/editar" element={<EditarPerfilPage />} />
-        <Route path="/treinos/:id/editar" element={<EditarTreino />} />
-        <Route path="/dietas" element={<DietasPage />} />
-
+        <Route path="/esquecer-senha" element={<EsquecerSenhaPage />} />
+        <Route path="/redefinir-senha" element={<ResetSenhaPage />} />
+        <Route path="/login" element={<LoginPage />} />
       </Route>
-      <Route path="/academias-externas/:placeId" element={<DetalhesAcademiaExternaPage />} />
-      <Route path="/academias/:id" element={<DetalhesAcademiaPage />} />
-      <Route path="/personais/:id" element={<DetalhesPersonalPage />} />
-      <Route path="/treinos/:id" element={<DetalhesTreinoPage />} />
-      <Route path="/dietas/:id" element={<DetalhesDietaPage />} />
-      <Route path="/cadastrar-academia" element={<CadastrarAcademiaPage />} />
-      <Route path="/esquecer-senha" element={<EsquecerSenhaPage />} />
-      <Route path="/redefinir-senha" element={<ResetSenhaPage />} />
-      
-      <Route path="/login" element={<LoginPage />} />
     </Routes>
   );
 };

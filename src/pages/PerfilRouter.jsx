@@ -6,16 +6,21 @@ import PerfilAlunoPage from './PerfilAlunoPage';
 import PerfilAcademiaPage from './PerfilAcademiaPage';
 import PerfilPersonalPage from './PerfilPersonalPage';
 import PerfilAdminPage from './PerfilAdminPage';
+import SkeletonTestimonial from '../components/skeletons/SkeletonTestimonial';
 import { useGetUser } from '../hooks/useGetUser';
 import { toast } from 'sonner';
 
 const PerfilRouter = () => {
   const navigate = useNavigate();
-  // const [user, setUser] = useState(null);
-  // const [loading, setLoading] = useState(true);
   const {user, loading} = useGetUser();
 
-  if (loading) return <p className="text-center mt-10">Carregando perfil...</p>;
+  if (loading) {
+    return (
+      <div className="flex justify-center h-screen mt-14">
+        <SkeletonTestimonial />
+      </div>
+    );
+  };
 
   if (!user) {
     navigate('/login');

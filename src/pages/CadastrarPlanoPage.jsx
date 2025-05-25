@@ -3,6 +3,8 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import Menu from '../components/Menu';
 import Rodape from '../components/Rodape';
+import { toast } from 'sonner';
+import SkeletonParagraphs from '../components/skeletons/SkeletonParagraphs';
 
 const CadastrarPlanoPage = () => {
   const [searchParams] = useSearchParams();
@@ -11,6 +13,7 @@ const CadastrarPlanoPage = () => {
   const [form, setForm] = useState({ nome: '', descricao: '', preco: '' });
   const [academia, setAcademia] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
 
   useEffect(() => {
     if (academiaId) {
@@ -28,20 +31,24 @@ const CadastrarPlanoPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setLoadingSubmit(true);
       await api.post(`/planos`, {
         ...form,
         academiaId: Number(academiaId)
       });
       navigate(`/academias/${academiaId}/editar`);
+      toast.success('Plano cadastrado com sucesso.');
     } catch (error) {
-      alert('Erro ao cadastrar plano.');
+      toast.error('Erro ao cadastrar plano.');
+    } finally {
+      setLoadingSubmit(false);
     }
   };
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Carregando detalhes da academia...</p>
+        <SkeletonParagraphs />
       </div>
     );
   }
@@ -86,9 +93,19 @@ const CadastrarPlanoPage = () => {
               required
               className="w-full border px-4 py-2 rounded"
             />
-            <button type="submit" className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800">
-              Salvar Plano
-            </button>
+            <div className="flex justify-between gap-2">
+              <button type="submit" className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800 disabled:opacity-50" disabled={loadingSubmit}>
+                {loadingSubmit ? 'Cadastrando...' : 'Cadastrar'}
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate(-1)}
+                className="bg-gray-300 text-black px-6 py-2 rounded hover:bg-gray-400 disabled:opacity-50"
+                disabled={loadingSubmit}
+              >
+                Cancelar
+              </button>
+            </div>
           </form>
         </div>
       </section>

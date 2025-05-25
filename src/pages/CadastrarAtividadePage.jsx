@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import Menu from '../components/Menu';
-import Rodape from '../components/Rodape';
+import SkeletonDefault from '../components/skeletons/SkeletonDefault';
+import { toast } from 'sonner';
+import SkeletonParagraphs from '../components/skeletons/SkeletonParagraphs';
 
 const diasSemana = [
   'SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO', 'DOMINGO'
@@ -24,6 +25,7 @@ const CadastrarAtividadePage = () => {
   const [horariosSelecionados, setHorariosSelecionados] = useState([]);
   const [academia, setAcademia] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
 
   useEffect(() => {
     if (academiaId) {
@@ -38,7 +40,7 @@ const CadastrarAtividadePage = () => {
     e.preventDefault();
 
     if (!nome.trim() || diasSelecionados.length === 0 || horariosSelecionados.length === 0) {
-      alert('Preencha todos os campos e selecione pelo menos um dia e um horário.');
+      toast.error('Preencha todos os campos e selecione pelo menos um dia e um horário.');
       return;
     }
 
@@ -50,11 +52,14 @@ const CadastrarAtividadePage = () => {
     });
 
     try {
+      setLoadingSubmit(true);
       await Promise.all(atividades.map((atividade) => api.post('/atividades', atividade)));
-      alert('Atividades cadastradas com sucesso.');
+      toast.success('Atividades cadastradas com sucesso.');
       navigate(`/academias/${academiaId}/editar`);
     } catch (error) {
-      alert('Erro ao cadastrar atividades.');
+      toast.error('Erro ao cadastrar atividades.');
+    } finally {
+      setLoadingSubmit(false);
     }
   };
 
@@ -69,7 +74,7 @@ const CadastrarAtividadePage = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Carregando detalhes da academia...</p>
+        <SkeletonParagraphs />
       </div>
     );
   }
@@ -128,9 +133,19 @@ const CadastrarAtividadePage = () => {
                 ))}
               </div>
             </div>
-            <button type="submit" className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800">
-              Salvar Atividades
-            </button>
+            <div className="flex justify-between gap-2">
+              <button type="submit" className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800 disabled:opacity-50" disabled={loadingSubmit}>
+                {loadingSubmit ? 'Cadastrando...' : 'Cadastrar Atividade'}
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate(-1)}
+                className="bg-gray-300 text-black px-6 py-2 rounded hover:bg-gray-400 disabled:opacity-50"
+                disabled={loadingSubmit}
+              >
+                Cancelar
+              </button>
+            </div>
           </form>
         </div>
       </section>

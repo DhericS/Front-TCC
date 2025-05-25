@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import FormTreino from '../components/FormTreino';
-import { toast } from 'sonner';
-import ModalDialog from '../components/ModalDialog';
 import FormDieta from '../components/FormDieta';
+import ModalDialog from '../components/ModalDialog';
+import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 
 const PerfilPersonalPage = ({ user }) => {
+  const [imagemUrl, setImagemUrl] = useState(user.imagemUrl || '');
+  const [uploading, setUploading] = useState(false);
+
   const [treinos, setTreinos] = useState([]);
   const [dietas, setDietas] = useState([]);
   const [loadingTreinos, setLoadingTreinos] = useState(false);
@@ -30,7 +34,7 @@ const PerfilPersonalPage = ({ user }) => {
       } finally {
         setLoadingTreinos(false);
       }
-    }
+    };
 
     const fetchDieta = async () => {
       setLoadingDietas(true);
@@ -45,13 +49,33 @@ const PerfilPersonalPage = ({ user }) => {
       } finally {
         setLoadingDietas(false);
       }
-    }
+    };
 
     fetchTreino();
     fetchDieta();
   }, [user.id]);
 
-  const handleEdit = () => navigate('/perfil/editar');
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('tipoUsuario', 'personal');
+
+    try {
+      setUploading(true);
+      const res = await axios.post(`/usuarios/${user.id}/upload-imagem`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setImagemUrl(res.data.url);
+      toast.success('Foto de perfil atualizada!');
+    } catch (error) {
+      toast.error('Erro ao enviar imagem.');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleDelete = async () => {
     const confirm = window.confirm('Tem certeza que deseja excluir sua conta?');
@@ -64,9 +88,11 @@ const PerfilPersonalPage = ({ user }) => {
       localStorage.removeItem('token');
       navigate('/login');
     } catch (error) {
-      alert('Erro ao excluir usuário.');
+      toast.error('Erro ao excluir usuário.');
     }
   };
+
+  const handleEdit = () => navigate('/perfil/editar');
 
   const handleDeleteTreino = async (id) => {
     try {
@@ -75,60 +101,106 @@ const PerfilPersonalPage = ({ user }) => {
       });
       setTreinos(treinos.filter((treino) => treino.id !== id));
       setIsModalTreinoOpen(false);
-    } catch (error) {
+    } catch {
       toast.error('Erro ao deletar treino.');
     }
-  }
+  };
 
   const handleDeleteDieta = async (id) => {
     try {
       await axios.delete(`http://localhost:8080/dieta/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      setDietas(prev => prev.filter((dieta) => dieta.id !== id));
+      setDietas(dietas.filter((dieta) => dieta.id !== id));
       setIsModalDietaOpen(false);
       toast.success('Dieta deletada com sucesso!');
-    } catch (error) {
-      toast.error('Erro ao deletar Dieta.');
+    } catch {
+      toast.error('Erro ao deletar dieta.');
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-8 flex flex-col items-center">
-      <div className="max-w-5xl w-full bg-white shadow-xl rounded-2xl p-8">
-        <div className="flex flex-col md:flex-row justify-between items-start mb-6">
+
+      {/* Foto de Perfil */}
+      <div className="flex justify-center mb-6">
+        <div className="w-32 h-32 bg-gray-200 rounded-full overflow-hidden">
+          <img
+            src={imagemUrl || '/assets/imagens/personal-default.jpg'}
+            alt="Foto de Perfil"
+            className="w-full h-full object-cover"
+          />
+        </div>
+      </div>
+      <div className="mb-6 text-center">
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="hidden"
+          id="upload-photo"
+          disabled={uploading}
+        />
+        <label htmlFor="upload-photo" className="cursor-pointer text-blue-600 hover:underline">
+          {uploading ? 'Enviando...' : 'Clique aqui para mudar sua foto de perfil'}
+        </label>
+      </div>
+
+      <motion.div
+        className="max-w-5xl w-full bg-white shadow-2xl rounded-3xl p-10 border border-gray-200"
+        initial={{ opacity: 0, scale: 0.95, y: 30 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+      >
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start mb-8">
           <div>
-            <h2 className="text-3xl font-bold text-black mb-2">Olá, {user.nome}</h2>
-            <p className="text-gray-600">Perfil do Personal</p>
+            <h2 className="text-4xl font-bold text-black mb-2">👋 Olá, {user.nome}</h2>
+            <p className="text-gray-500 text-lg">Perfil do Personal</p>
           </div>
 
           <div className="flex gap-4 mt-4 md:mt-0">
-            <button onClick={handleEdit} className="px-4 py-2 border border-black rounded-md bg-black text-white hover:bg-white hover:text-black transition">Editar</button>
-            <button onClick={handleDelete} className="px-4 py-2 border border-black rounded-md text-black hover:bg-black hover:text-white transition">Excluir</button>
+            <button
+              onClick={handleEdit}
+              className="px-5 py-2 rounded-lg border border-black bg-black text-white font-medium 
+              hover:bg-white hover:text-black transition-all shadow-md"
+            >
+              ✏️ Editar
+            </button>
+            <button
+              onClick={handleDelete}
+              className="px-5 py-2 rounded-lg border border-black text-black font-medium 
+              hover:bg-black hover:text-white transition-all shadow-md"
+            >
+              🗑️ Excluir
+            </button>
           </div>
         </div>
 
-        <div className="mb-8">
-          <h3 className="text-xl font-semibold text-black mb-4">Treinos Criados</h3>
+        {/* Treinos */}
+        <div className="mb-10">
+          <h3 className="text-2xl font-semibold text-black mb-6">🏋️‍♂️ Treinos Criados</h3>
 
           {loadingTreinos ? (
             <div className="flex justify-center items-center h-24">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-800"></div>
-              <span className="ml-2 text-gray-700">Carregando treinos...</span>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
+              <span className="ml-3 text-gray-700">Carregando treinos...</span>
             </div>
           ) : treinos.length > 0 ? (
-            <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ul className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {treinos.map((treino) => (
-                <li
+                <motion.li
                   key={treino.id}
-                  className="border border-gray-300 rounded-lg p-4 bg-gray-50 shadow-sm hover:shadow-md transition"
+                  className="border border-gray-300 rounded-xl p-5 bg-gray-50 shadow hover:shadow-lg transition-all"
+                  whileHover={{ scale: 1.02 }}
                 >
-                  <h4 className="font-semibold text-lg text-black">{treino.nome}</h4>
-                  <p className="text-sm text-gray-600 mb-4">{treino.descricao}</p>
+                  <h4 className="font-semibold text-xl text-black mb-2">{treino.nome}</h4>
+                  <p className="text-sm text-gray-600 mb-5">{treino.descricao}</p>
                   <div className="flex justify-end gap-2">
                     <button
                       onClick={() => navigate(`/treinos/${treino.id}/editar`)}
-                      className="px-3 py-1 text-sm border border-black rounded hover:bg-black hover:text-white transition"
+                      className="px-4 py-1.5 text-sm border border-black rounded-lg 
+                      hover:bg-black hover:text-white transition"
                     >
                       Editar
                     </button>
@@ -137,12 +209,13 @@ const PerfilPersonalPage = ({ user }) => {
                         setSelectedItem(treino.id);
                         setIsModalTreinoOpen(true);
                       }}
-                      className="px-3 py-1 text-sm text-red-600 border border-red-600 rounded hover:bg-red-600 hover:text-white transition"
+                      className="px-4 py-1.5 text-sm text-red-600 border border-red-600 rounded-lg 
+                      hover:bg-red-600 hover:text-white transition"
                     >
                       Deletar
                     </button>
                   </div>
-                </li>
+                </motion.li>
               ))}
             </ul>
           ) : (
@@ -150,27 +223,30 @@ const PerfilPersonalPage = ({ user }) => {
           )}
         </div>
 
-        <div className="mb-8">
-          <h3 className="text-xl font-semibold text-black mb-4">Dietas Criadas</h3>
+        {/* Dietas */}
+        <div>
+          <h3 className="text-2xl font-semibold text-black mb-6">🍎 Dietas Criadas</h3>
 
           {loadingDietas ? (
             <div className="flex justify-center items-center h-24">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-800"></div>
-              <span className="ml-2 text-gray-700">Carregando dietas...</span>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
+              <span className="ml-3 text-gray-700">Carregando dietas...</span>
             </div>
           ) : dietas.length > 0 ? (
-            <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ul className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {dietas.map((dieta) => (
-                <li
+                <motion.li
                   key={dieta.id}
-                  className="border border-gray-300 rounded-lg p-4 bg-gray-50 shadow-sm hover:shadow-md transition"
+                  className="border border-gray-300 rounded-xl p-5 bg-gray-50 shadow hover:shadow-lg transition-all"
+                  whileHover={{ scale: 1.02 }}
                 >
-                  <h4 className="font-semibold text-lg text-black">{dieta.nome}</h4>
-                  <p className="text-sm text-gray-600 mb-4">{dieta.descricao}</p>
+                  <h4 className="font-semibold text-xl text-black mb-2">{dieta.nome}</h4>
+                  <p className="text-sm text-gray-600 mb-5">{dieta.descricao}</p>
                   <div className="flex justify-end gap-2">
                     <button
                       onClick={() => navigate(`/dietas/${dieta.id}/editar`)}
-                      className="px-3 py-1 text-sm border border-black rounded hover:bg-black hover:text-white transition"
+                      className="px-4 py-1.5 text-sm border border-black rounded-lg 
+                      hover:bg-black hover:text-white transition"
                     >
                       Editar
                     </button>
@@ -179,26 +255,22 @@ const PerfilPersonalPage = ({ user }) => {
                         setSelectedItem(dieta.id);
                         setIsModalDietaOpen(true);
                       }}
-                      className="px-3 py-1 text-sm text-red-600 border border-red-600 rounded hover:bg-red-600 hover:text-white transition"
+                      className="px-4 py-1.5 text-sm text-red-600 border border-red-600 rounded-lg 
+                      hover:bg-red-600 hover:text-white transition"
                     >
                       Deletar
                     </button>
                   </div>
-                </li>
+                </motion.li>
               ))}
             </ul>
           ) : (
             <p className="text-gray-500">Nenhuma dieta cadastrada.</p>
           )}
         </div>
+      </motion.div>
 
-      </div>
-
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-8'>
-        <FormTreino userId={user.id} onSubmit={(data) => console.log()} />
-        <FormDieta personalId={user.id} onSubmit={(data) => console.log()} />
-      </div>
-
+      {/* Modais para deletar */}
       <ModalDialog
         isOpen={isModalTreinoOpen}
         onClose={() => setIsModalTreinoOpen(false)}

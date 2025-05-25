@@ -19,8 +19,11 @@ export default function Avaliacoes({ entidadeId, tipoEntidade, usuarioLogadoId }
     setLoading(true);
     setError(null);
     try {
+      const params = { tipoEntidade };
+      if (entidadeId) params.entidadeId = entidadeId;
+
       const res = await api.get('/avaliacoes', {
-        params: { tipoEntidade, entidadeId }
+        params,
       });
       setAvaliacoes(res.data);
     } catch (err) {
@@ -31,7 +34,9 @@ export default function Avaliacoes({ entidadeId, tipoEntidade, usuarioLogadoId }
   };
 
   useEffect(() => {
-    fetchAvaliacoes();
+    if (entidadeId) {
+      fetchAvaliacoes();
+    }
   }, [entidadeId]);
 
   const criarAvaliacao = async () => {
@@ -113,13 +118,13 @@ export default function Avaliacoes({ entidadeId, tipoEntidade, usuarioLogadoId }
             min={1}
             max={5}
             value={notaNova}
-            onChange={e => setNotaNova(Number(e.target.value))}
+            onChange={(e) => setNotaNova(Number(e.target.value))}
             className="border rounded px-2 py-1 mb-4 w-20"
           />
           <label className="block mb-2 font-semibold">Comentário</label>
           <textarea
             value={comentarioNovo}
-            onChange={e => setComentarioNovo(e.target.value)}
+            onChange={(e) => setComentarioNovo(e.target.value)}
             className="border rounded px-2 py-1 w-full mb-4"
             rows={3}
           />
@@ -141,7 +146,7 @@ export default function Avaliacoes({ entidadeId, tipoEntidade, usuarioLogadoId }
       )}
 
       <ul className="space-y-4">
-        {avaliacoes.map(avaliacao => (
+        {avaliacoes.map((avaliacao) => (
           <li key={avaliacao.id} className="border rounded p-4 bg-gray-100 shadow">
             {modoEdicao && editandoId === avaliacao.id ? (
               <>
@@ -151,13 +156,13 @@ export default function Avaliacoes({ entidadeId, tipoEntidade, usuarioLogadoId }
                   min={1}
                   max={5}
                   value={notaEdit}
-                  onChange={e => setNotaEdit(Number(e.target.value))}
+                  onChange={(e) => setNotaEdit(Number(e.target.value))}
                   className="border rounded px-2 py-1 mb-2 w-20"
                 />
                 <label className="block mb-1 font-semibold">Comentário</label>
                 <textarea
                   value={comentarioEdit}
-                  onChange={e => setComentarioEdit(e.target.value)}
+                  onChange={(e) => setComentarioEdit(e.target.value)}
                   className="border rounded px-2 py-1 w-full mb-2"
                   rows={3}
                 />
