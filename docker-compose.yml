@@ -4,7 +4,7 @@ services:
   frontend:
     build:
       context: .
-    container_name: frontend-tcc
+    container_name: frontend-tcc-container
     ports:
       - "80:80"
     environment:
