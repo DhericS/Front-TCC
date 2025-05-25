@@ -14,5 +14,6 @@ FROM nginx:alpine
 # Corrigido: Vite gera /dist, não /build
 COPY --from=build /app/dist /usr/share/nginx/html
 
+#Teste
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
