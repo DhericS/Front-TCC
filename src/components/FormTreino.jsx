@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import api from '../services/api';
 import axios from 'axios';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 const FormTreino = ({ userId, onSubmit }) => {
   const [form, setForm] = useState({ nome: '', descricao: '', userId });
@@ -9,6 +10,7 @@ const FormTreino = ({ userId, onSubmit }) => {
     { nome: '', series: '', repeticoes: '', grupoMuscular: '' },
   ]);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,7 +41,7 @@ const FormTreino = ({ userId, onSubmit }) => {
 
     setLoading(true);
     try {
-        const res = await axios.post('https://backend.guidesfit.com.br/treino', {
+        const res = await api.post('/treino', {
             ...form,
             exercicios,
             userId: userId,
@@ -54,15 +56,13 @@ const FormTreino = ({ userId, onSubmit }) => {
     } catch (error) {
         toast.error('Erro ao cadastrar treino');
         setLoading(false);
-        console.error('Erro ao cadastrar treino:', error);
     } finally {
         setForm({ nome: '', descricao: '', userId });
         setExercicios([{ nome: '', series: '', repeticoes: '', grupoMuscular: '' }]);
         setLoading(false);
+        navigate(-1);
     }
 
-
-    console.log('Treino cadastrado:', res.data);
     onSubmit({ ...form, exercicios });
   };
 
@@ -151,11 +151,10 @@ const FormTreino = ({ userId, onSubmit }) => {
                 >
                   <option value="">Selecione</option>
                   <option value="PEITO">Peito</option>
-                  <option value="COSTAS">Costas</option>
-                  <option value="PERNA">Perna</option>
-                  <option value="OMBRO">Ombro</option>
-                  <option value="BÍCEPS">Bíceps</option>
-                  <option value="TRÍCEPS">Tríceps</option>
+                  <option value="COSTA">Costas</option>
+                  <option value="PERNAS">Perna</option>
+                  <option value="OMBROS">Ombro</option>
+                  <option value="BRACOS">Braços</option>
                 </select>
               </div>
             </div>
@@ -181,13 +180,24 @@ const FormTreino = ({ userId, onSubmit }) => {
         </button>
       </div>
 
-      <button
-        type="submit"
-        className="px-6 py-3 bg-black text-white rounded-md hover:bg-white hover:text-black border border-black transition"
-        disabled={loading}
-      >
-        Cadastrar Treino
-      </button>
+      <div className='flex justify-between'>
+        <button
+          type="submit"
+          className="px-6 py-3 bg-black text-white rounded-md hover:bg-white hover:text-black border border-black transition"
+          disabled={loading}
+        >
+          Cadastrar Treino
+        </button>
+        
+        <button
+          type="button"
+          className="px-6 py-3 bg-gray-200 text-gray-500 rounded-md hover:bg-gray-300 hover:text-black border border-black transition"
+          disabled={loading}
+          onClick={() => navigate(-1)}
+        >
+          Voltar
+        </button>
+      </div>
     </form>
   );
 };

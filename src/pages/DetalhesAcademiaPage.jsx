@@ -5,8 +5,8 @@ import { motion } from 'framer-motion';
 import SkeletonParagraphs from '../components/skeletons/SkeletonParagraphs';
 import { useGetUser } from '../hooks/useGetUser';
 import NewReview from '../components/NewReview';
-import Reviews from '../components/Reviews';
 import { toast } from 'sonner';
+import ReviewsDynamic from '../components/ReviewsDynamic';
 
 const diaLabel = {
   SEGUNDA: 'Segunda-feira',
@@ -36,7 +36,7 @@ const item = {
 const DetalhesAcademiaPage = () => {
   const { id } = useParams();
   const [academia, setAcademia] = useState(null);
-  const { user } = useGetUser();
+  const { user, loading } = useGetUser();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -146,15 +146,25 @@ const DetalhesAcademiaPage = () => {
           </motion.div>
         )}
         <div className='mt-7 flex flex-col gap-4'>
-          <Reviews 
-            entidadeId={academia.id}
-            tipoEntidade={'ACADEMIA'}
-          />
-          <NewReview 
-            user={user}
-            entidadeId={academia.id}
-            tipoEntidade={'ACADEMIA'}
-          />
+          {loading ? (
+            <div className="min-h-screen flex items-center justify-center">
+              <SkeletonParagraphs />
+            </div>
+          ) : (
+            <ReviewsDynamic
+              user={user}
+              entidadeId={academia.id}
+              tipoEntidade={'ACADEMIA'}
+            />
+          )}
+
+          {user && (
+            <NewReview 
+              user={user}
+              entidadeId={academia.id}
+              tipoEntidade={'ACADEMIA'}
+            />
+          )}
         </div>
       </div>
     </section>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { useParams, useNavigate } from 'react-router-dom';
+import api from '../services/api';
 
 const EditarDieta = () => {
   const { id } = useParams(); // ID da dieta passado pela rota
@@ -23,7 +24,7 @@ const EditarDieta = () => {
     const fetchDieta = async () => {
     setLoading(true);  
     try {
-        const res = await axios.get(`https://backend.guidesfit.com.br/dieta/${id}`, {
+        const res = await api.get(`/dieta/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -50,7 +51,7 @@ const EditarDieta = () => {
     setLoadingSubmit(true);
 
     try {
-      await axios.put(`https://backend.guidesfit.com.br/dieta/${id}`, form, {
+      await api.put(`/dieta/${id}`, form, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },

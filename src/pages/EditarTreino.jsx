@@ -62,7 +62,7 @@ const EditarTreino = () => {
     setLoadingSubmit(true);
 
     try {
-      await axios.put(`https://backend.guidesfit.com.br/treino/${id}`, {
+      await api.put(`/treino/${id}`, {
         ...form,
         exercicios: exercicios,
         personalId: form.personal.id,
@@ -169,11 +169,10 @@ const EditarTreino = () => {
                         >
                           <option value="">Selecione</option>
                           <option value="PEITO">Peito</option>
-                          <option value="COSTAS">Costas</option>
-                          <option value="PERNA">Perna</option>
-                          <option value="OMBRO">Ombro</option>
-                          <option value="BÍCEPS">Bíceps</option>
-                          <option value="TRÍCEPS">Tríceps</option>
+                          <option value="COSTA">Costas</option>
+                          <option value="PERNAS">Perna</option>
+                          <option value="OMBROS">Ombro</option>
+                          <option value="BRACOS">Braços</option>
                         </select>
                       </div>
                     </div>

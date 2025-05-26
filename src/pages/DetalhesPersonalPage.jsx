@@ -8,11 +8,12 @@ import api from '../services/api';
 import { useGetUser } from '../hooks/useGetUser';
 import Reviews from '../components/Reviews';
 import NewReview from '../components/NewReview';
+import ReviewsDynamic from '../components/ReviewsDynamic';
 
 export default function DetalhesPersonalPage() {
   const { id } = useParams();
   const [personal, setPersonal] = useState(null);
-  const { user } = useGetUser();
+  const { user, loading: loadingUser } = useGetUser();
   const [loading, setLoading] = useState(true);
   const navigation = useNavigate();
 
@@ -111,18 +112,27 @@ export default function DetalhesPersonalPage() {
         </div>
 
         <div className="mt-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Avaliações</h2>
           {personal?.id ? (
             <div className='flex flex-col gap-4'>
-              <Reviews
-                entidadeId={personal?.id}
-                tipoEntidade={'PERSONAL'}
-              />
-              <NewReview 
-                entidadeId={personal?.id}
-                tipoEntidade={'PERSONAL'}
-                user={user}
-              />
+              {loadingUser ? (
+                <div className="text-center py-10 flex justify-center">
+                  <SkeletonParagraphs />
+                </div>
+              ) : (
+                <ReviewsDynamic
+                  user={user}
+                  entidadeId={personal?.id}
+                  tipoEntidade={'PERSONAL'}
+                />
+              )}
+              
+              {user && (
+                <NewReview 
+                  entidadeId={personal?.id}
+                  tipoEntidade={'PERSONAL'}
+                  user={user}
+                />
+              )}
             </div>
           ) : (
             <p>Carregando avaliações...</p>

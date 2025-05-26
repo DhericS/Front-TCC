@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useGetUser } from '../hooks/useGetUser';
 import api from '../services/api';
-import Avaliacoes from '../components/Avaliacoes';
 import SkeletonParagraphs from '../components/skeletons/SkeletonParagraphs';
-import Reviews from '../components/Reviews';
 import NewReview from '../components/NewReview';
+import ReviewsDynamic from '../components/ReviewsDynamic';
 
 export default function DetalhesDietaPage() {
   const { id } = useParams();
@@ -59,7 +58,7 @@ export default function DetalhesDietaPage() {
         <div className="bg-purple-50 p-5 rounded-lg shadow-md">
           <h3 className="text-lg font-semibold text-purple-700 mb-2">Autor</h3>
           <p className="text-gray-900 text-xl">
-            {dieta.userAcad?.usuario?.nome || dieta.personal?.usuario?.nome || 'N/A'}
+            {dieta.nomeUsuario || 'N/A'}
           </p>
         </div>
       </div>
@@ -71,23 +70,25 @@ export default function DetalhesDietaPage() {
         Voltar
       </button>
 
-      {/* Seção de avaliações */}
-      {/* <Avaliacoes
-        entidadeId={dieta.id}
-        tipoEntidade="DIETA"
-        usuarioLogadoId={user?.id}
-      /> */}
-
       <div className='flex flex-col gap-3'>
-        <Reviews 
-          entidadeId={dieta.id}
-          tipoEntidade={'DIETA'}
-        />
-        <NewReview 
-          entidadeId={dieta.id}
-          tipoEntidade={'DIETA'}
-          user={user}
-        />
+        {loadingUsuario ? (
+          <div className="text-center py-10 flex justify-center">
+            <SkeletonParagraphs />
+          </div>
+        ) : (
+          <ReviewsDynamic
+            user={user}
+            entidadeId={dieta?.id}
+            tipoEntidade={'DIETA'}
+          />
+        )}
+        {user && (
+          <NewReview 
+            entidadeId={dieta.id}
+            tipoEntidade={'DIETA'}
+            user={user}
+          />
+        )}
       </div>
     </div>
   );

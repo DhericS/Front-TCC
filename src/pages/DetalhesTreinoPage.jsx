@@ -8,6 +8,7 @@ import Reviews from '../components/Reviews';
 import NewReview from '../components/NewReview';
 import { toast } from 'sonner';
 import api from '../services/api';
+import ReviewsDynamic from '../components/ReviewsDynamic';
 
 const gruposMuscularesLabels = {
   PEITO: 'Peito',
@@ -105,15 +106,18 @@ const DietasTreinoPage = () => {
         </Link>
 
         <div className='flex flex-col gap-3'>
-          <Reviews 
-            entidadeId={treino.id}
-            tipoEntidade={'TREINO'}
-          />
-          <NewReview 
-            entidadeId={treino.id}
-            tipoEntidade={'TREINO'}
+          <ReviewsDynamic
             user={user}
+            entidadeId={treino.id}
+            tipoEntidade={'TREINO'}
           />
+          {user && (
+            <NewReview 
+              entidadeId={treino.id}
+              tipoEntidade={'TREINO'}
+              user={user}
+            />
+          )}
         </div>
       </div>
     </div>

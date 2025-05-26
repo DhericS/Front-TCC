@@ -1,10 +1,16 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import api from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 const NewReview = ({ tipoEntidade, entidadeId, user }) => {
     const [form, setForm] = useState({ nota: '', comentario: '' });
     const [loadingSubmit, setLoadingSubmit] = useState(false);
+    const navigate = useNavigate();
+
+    if (user.tipoUsuario !== 'useracad') {
+        return;
+    }
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -32,6 +38,7 @@ const NewReview = ({ tipoEntidade, entidadeId, user }) => {
             });
             toast.success('Avaliação Salva com sucesso!');
             resetFormulario();
+            navigate(0);
         } catch (e) {
             toast.error('Erro ao salvar avaliação!');
             console.log(e)

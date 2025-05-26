@@ -26,6 +26,9 @@ import DetalhesPersonalPage from '../pages/DetalhesPersonalPage';
 import ResetSenhaPage from '../pages/ResetSenhaPage';
 import EsquecerSenhaPage from '../pages/EsquecerSenhaPage';
 import NotFound from '../pages/NotFound';
+import CadastrarDieta from '../pages/CadastrarDieta';
+import CadastrarTreinoPage from '../pages/CadastrarTreinoPage';
+import EditarDadosAcademia from '../pages/EditarDadosAcademia';
 
 const AppRoutes = () => {
   return (
@@ -39,6 +42,7 @@ const AppRoutes = () => {
         <Route path="/academias-externas/:placeId" element={<DetalhesAcademiaExternaPage />} /> 
         <Route path="/academias/:id" element={<DetalhesAcademiaPage />} />
         <Route path="/cadastrar-academia" element={<CadastrarAcademiaPage />} />
+        <Route path="/academias/:id/editar/dados" element={<EditarDadosAcademia />} />
 
         <Route path="/personais" element={<PersonaisPage />} />
         <Route path="/personais/:id" element={<DetalhesPersonalPage />} />
@@ -46,6 +50,7 @@ const AppRoutes = () => {
         <Route path="/treinos" element={<TreinosPage />} />
         <Route path="/treinos/:id" element={<DetalhesTreinoPage />} />
         <Route path="/treinos/:id/editar" element={<EditarTreino />} />
+        <Route path="/treinos/cadastrar" element={<CadastrarTreinoPage />} />
         
         <Route path="/planos/cadastrar" element={<CadastrarPlanoPage />} />
         <Route path="/planos/editar/:id" element={<EditarPlanoPage />} />
@@ -56,6 +61,7 @@ const AppRoutes = () => {
         <Route path="/dietas" element={<DietasPage />} />
         <Route path="/dietas/:id" element={<DetalhesDietaPage />} />
         <Route path="/dietas/:id/editar" element={<EditarDieta />} />
+        <Route path="/dietas/cadastrar" element={<CadastrarDieta />} />
 
         <Route path="/cadastro" element={<CadastroPage />}/>
         <Route path="/perfil" element={<PerfilRouter />} />

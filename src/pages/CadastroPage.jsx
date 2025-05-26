@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import ModalForm from '../components/ModalForm';
 import { toast } from 'sonner';
+import api from '../services/api';
 
 export default function CadastroPage() {
   const navigate = useNavigate();
@@ -99,7 +100,7 @@ export default function CadastroPage() {
 
     setLoading(true);
     try {
-      await axios.post('/auth/register', payload);
+      await api.post('/auth/register', payload);
       toast.success('Cadastro realizado com sucesso!');
       navigate('/login');
     } catch (err) {

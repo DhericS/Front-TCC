@@ -1,8 +1,8 @@
-import FormTreino from "../components/FormTreino";
+import FormDieta from "../components/FormDieta";
 import SkeletonDefault from "../components/skeletons/SkeletonDefault";
 import { useGetUser } from "../hooks/useGetUser";
 
-const CadastrarTreinoPage = () => {
+const CadastrarDieta = () => {
     const { user } = useGetUser();
 
     return (
@@ -10,8 +10,8 @@ const CadastrarTreinoPage = () => {
             {!user ? (
                 <SkeletonDefault />
             ) : (
-                <FormTreino
-                    userId={user.id}
+                <FormDieta  
+                    personalId={user.id}
                     onSubmit={() => {}}
                 />
             )}
@@ -19,4 +19,4 @@ const CadastrarTreinoPage = () => {
     );
 }
 
-export default CadastrarTreinoPage;
+export default CadastrarDieta;

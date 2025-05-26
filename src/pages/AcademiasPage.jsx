@@ -3,6 +3,7 @@ import api from '../services/api';
 import { motion } from 'framer-motion';
 import SkeletonImagePlaceholder from '../components/skeletons/SkeletonImagePlaceholder';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const filtrosPadrao = {
   tipos: [],
@@ -11,9 +12,9 @@ const filtrosPadrao = {
 };
 
 const opcoesFiltro = {
-  tipos: ['FITNESS', 'CROSSFIT', 'FUNCIONAL', 'PILATES'],
-  estruturas: ['PISCINA', 'ESTACIONAMENTO', 'VESTIARIO'],
-  servicos: ['PERSONAL', 'NUTRICIONISTA', 'BEBEDOURO']
+  tipos: ['CONVENCIONAL', 'CROSSFIT'],
+  estruturas: ['ACESSIBILIDADE', 'ESTACIONAMENTO', 'VESTIARIO', 'BEBEDOURO', 'ARMARIOS', 'AR_CONDICIONADO', 'WIFI'],
+  servicos: ['AVALIACAO_INICIAL', 'NUTRICIONAL', 'PERSONAL', 'TREINOS', 'APP', 'WHATSAPP', 'VINTE_QUATRO_HORAS']
 };
 
 const AcademiasPage = () => {
@@ -39,12 +40,14 @@ const AcademiasPage = () => {
   };
 
   const buscarAcademiasExternas = async () => {
-    if (!search) return;
     try {
-      const res = await api.get(`/academia/externas?endereco=${encodeURIComponent(search)}`);
+      const res = await api.get(`/academia/externas`, {
+        params: { endereco: encodeURIComponent(search) }
+      });
+      console.log(res);
       setAcademiasExternas(res.data);
     } catch (e) {
-      console.error("Erro ao buscar academias externas", e);
+      toast.error("Erro ao buscar academias externas", e);
       setAcademiasExternas([]);
     }
   };
@@ -70,11 +73,9 @@ const AcademiasPage = () => {
 
   useEffect(() => {
     buscarAcademias();
-  }, [search, filtros]);
 
-  useEffect(() => {
     buscarAcademiasExternas();
-  }, [search]);
+  }, [search, filtros]);
 
   return (
     <>

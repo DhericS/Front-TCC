@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { toast } from 'sonner';
+import api from '../services/api';
+import { useNavigate } from 'react-router-dom';
 
 const FormDieta = ({ personalId, onSubmit }) => {
   const [form, setForm] = useState({
@@ -9,10 +10,10 @@ const FormDieta = ({ personalId, onSubmit }) => {
     calorias: '',
     objetivo: '',
     tipoDieta: '',
-    userAcadId: personalId,
     personalId,
   });
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,7 +25,7 @@ const FormDieta = ({ personalId, onSubmit }) => {
     setLoading(true);
 
     try {
-      const res = await axios.post('https://backend.guidesfit.com.br/dieta', form, {
+      const res = await api.post('/dieta', form, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -126,13 +127,24 @@ const FormDieta = ({ personalId, onSubmit }) => {
         </select>
       </div>
 
-      <button
-        type="submit"
-        className="px-6 py-3 bg-black text-white rounded-md hover:bg-white hover:text-black border border-black transition"
-        disabled={loading}
-      >
-        {loading ? 'Salvando...' : 'Salvar Dieta'}
-      </button>
+      <div className='flex justify-between'>
+        <button
+          type="submit"
+          className="px-6 py-3 bg-black text-white rounded-md hover:bg-white hover:text-black border border-black transition"
+          disabled={loading}
+        >
+          {loading ? 'Salvando...' : 'Salvar Dieta'}
+        </button>
+        <button
+          type="button"
+          className="px-6 py-3 bg-gray-300 text-white rounded-md hover:bg-white hover:text-black border border-black transition"
+          disabled={loading}
+          onClick={() => navigate(-1)}
+        >
+          Voltar
+        </button>
+
+      </div>
     </form>
   );
 };
