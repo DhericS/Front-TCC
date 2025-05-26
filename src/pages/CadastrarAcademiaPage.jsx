@@ -51,7 +51,7 @@ const CadastrarAcademiaPage = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       toast.success('Academia cadastrada com sucesso.');
-      navigate('/perfil-academia');
+      navigate('/perfil');
     } catch (error) {
       toast.error('Erro ao cadastrar academia.');
     } finally {
