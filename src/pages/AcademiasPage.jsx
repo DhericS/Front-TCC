@@ -44,7 +44,6 @@ const AcademiasPage = () => {
       const res = await api.get(`/academia/externas`, {
         params: { endereco: encodeURIComponent(search) }
       });
-      console.log(res);
       setAcademiasExternas(res.data);
     } catch (e) {
       toast.error("Erro ao buscar academias externas", e);
@@ -73,9 +72,14 @@ const AcademiasPage = () => {
 
   useEffect(() => {
     buscarAcademias();
-
-    buscarAcademiasExternas();
   }, [search, filtros]);
+
+  const handleSubmitSearch = (e) => {
+    e.preventDefault();
+    
+    setSearch(e.target.search.value.trim());
+    buscarAcademiasExternas();
+  }
 
   return (
     <>
@@ -84,13 +88,16 @@ const AcademiasPage = () => {
           <h2 className="text-3xl font-bold mb-6">Encontre uma Academia</h2>
 
           <div className="flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto mb-4">
-            <input
-              type="search"
-              placeholder="Digite o nome ou cidade"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="flex-grow min-w-[250px] px-4 py-2 rounded text-black"
-            />
+            <form className="w-full flex items-center gap-2" onSubmit={handleSubmitSearch}>
+              <input
+                type="search"
+                placeholder="Digite o nome ou cidade"
+                name='search'
+                className="flex-grow min-w-[250px] px-4 py-2 rounded text-black"
+              />
+
+              <button className='bg-white px-4 py-2 rounded text-black font-bold hover:scale-105 transition-all'>Buscar</button>
+            </form>
           </div>
 
           <div className="flex flex-wrap justify-center gap-6 max-w-4xl mx-auto text-left">
@@ -177,7 +184,7 @@ const AcademiasPage = () => {
                     src={
                       a.photoReference
                         ? `https://places.googleapis.com/v1/${a.photoReference}/media?maxWidthPx=800&key=${apiKey}`
-                        : '/assets/imagens/academia1.jpg'
+                        : '/assets/imagens/default-background.jpg'
                     }
                     alt={a.nome}
                     className="w-full h-48 object-cover cursor-pointer"

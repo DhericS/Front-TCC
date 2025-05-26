@@ -33,7 +33,7 @@ const EditarAcademia = () => {
         const res = await api.get(`/academia/${id}`);
         setAcademia(res.data);
       } catch (error) {
-        console.error('Erro ao buscar academia:', error);
+        toast.error('Erro ao editar Academia')
         navigate('/404');
       } finally {
         setLoading(false);
@@ -139,18 +139,23 @@ const EditarAcademia = () => {
             </label>
           </div>
 
-          {/* Detalhes da academia */}
           <div className="flex flex-col justify-between">
             <div>
               <h2 className="text-4xl font-bold mb-3">{academia.nome}</h2>
               <p className="text-lg text-gray-600 mb-2">{academia.endereco}</p>
               <p className="text-md text-gray-700 mb-4">{academia.descricao}</p>
               <span className="inline-block bg-black text-white text-sm px-4 py-1 rounded-full">
-                {academia.tipo}
+                {academia.tipoAcad}
               </span>
             </div>
 
             <div className="mt-6 flex gap-4 flex-wrap">
+              <Link
+                to={`/academias/${academia.id}/editar/dados`}
+                className="bg-black text-white py-2 px-5 rounded-full hover:bg-gray-800 transition"
+              >
+                Editar Dados da Academia
+              </Link>
               <Link
                 to={`/planos/cadastrar?academiaId=${academia.id}`}
                 className="bg-black text-white py-2 px-5 rounded-full hover:bg-gray-800 transition"

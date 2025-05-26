@@ -32,8 +32,6 @@ const PerfilAcademiaPage = ({ user }) => {
     fetchAcademias();
   }, [user.id]);
 
-  console.log(user);
-
   const handleDeleteUser = async () => {
     try {
       setHandleLoading(true);
