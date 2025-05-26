@@ -3,7 +3,6 @@ dist
 .git
 .gitignore
 Dockerfile
-nginx.conf
 *.log
 *.md
 .env
