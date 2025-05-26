@@ -16,7 +16,7 @@ const PerfilAlunoPage = ({ user }) => {
   const handleDelete = async () => {
     try {
       setLoadingDelete(true)
-      await axios.delete(`/usuarios/${user.id}`, {
+      await api.delete(`/usuarios/${user.id}`, {
         params: { userType: 'useracad' },
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -46,7 +46,7 @@ const PerfilAlunoPage = ({ user }) => {
 
     try {
       setUploading(true);
-      const res = await axios.post(`/usuarios/${user.id}/upload-imagem`, formData, {
+      const res = await api.post(`/usuarios/${user.id}/upload-imagem`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 

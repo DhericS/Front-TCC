@@ -35,7 +35,7 @@ const PerfilAcademiaPage = ({ user }) => {
   const handleDeleteUser = async () => {
     try {
       setHandleLoading(true);
-      const res = await axios.delete(`/usuarios/${user.id}`, {
+      const res = await api.delete(`/usuarios/${user.id}`, {
         params: { userType: 'personal' },
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });

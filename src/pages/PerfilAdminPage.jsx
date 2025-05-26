@@ -10,7 +10,7 @@ const PerfilAdminPage = ({ user }) => {
     if (!confirm) return;
 
     try {
-      await axios.delete(`/usuarios/${user.id}`, {
+      await api.delete(`/usuarios/${user.id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         },
