@@ -15,7 +15,7 @@ const CadastrarAcademiaPage = () => {
     endereco: '',
     telefone: '',
     tipoAcad: '',
-    imagemUrl: ''  
+    imagemUrl: ''
   });
 
   const handleChange = (e) => {
@@ -47,15 +47,11 @@ const CadastrarAcademiaPage = () => {
     e.preventDefault();
     setLoadingSubmit(true);
     try {
-      await api.post('/academia', {
-        ...form,
-        id: user.id,
-        planos: [],
-      }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      await api.post(`/usuarios/${user.id}/academia?tipoUsuario=useracadadmin`, form, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      navigate(-1);
       toast.success('Academia cadastrada com sucesso.');
+      navigate('/perfil-academia');
     } catch (error) {
       toast.error('Erro ao cadastrar academia.');
     } finally {
@@ -104,8 +100,8 @@ const CadastrarAcademiaPage = () => {
             className="w-full border px-4 py-2 rounded"
           >
             <option value="">Selecione o tipo de academia</option>
-            <option value="CROSSFIT">Crossfit</option>
             <option value="CONVENCIONAL">Convencional</option>
+            <option value="CROSSFIT">Crossfit</option>
           </select>
 
           {/* Upload de imagem */}

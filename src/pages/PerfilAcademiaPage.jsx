@@ -8,35 +8,39 @@ import api from '../services/api';
 const PerfilAcademiaPage = ({ user }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [academias, setAcademias] = useState([]);
+  const [academia, setAcademia] = useState(null);
   const [isModalDeleteUserIsOpen, setIsModalDeleteUserIsOpen] = useState(false);
   const [isModalDeleteAcademiaIsOpen, setIsModalDeleteAcademiaIsOpen] = useState(false);
   const [selectedAcademia, setSelectedAcademia] = useState(null);
   const [handleLoading, setHandleLoading] = useState(false);
 
   useEffect(() => {
-    const fetchAcademias = async () => {
+    const fetchAcademia = async () => {
       setLoading(true);
       try {
-        const res = await api.get(`/academia?userId=${user.id}`, {
+        const res = await api.get(`/usuarios/${user.id}/academia`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
-        setAcademias(res.data);
+        setAcademia(res.data);
       } catch (error) {
-        toast.error('Erro ao buscar academias');
+        if (error.response && error.response.status === 204) {
+          setAcademia(null);
+        } else {
+          toast.error('Erro ao buscar academia');
+        }
       } finally {
         setLoading(false);
       }
     };
 
-    fetchAcademias();
+    fetchAcademia();
   }, [user.id]);
 
   const handleDeleteUser = async () => {
     try {
       setHandleLoading(true);
-      const res = await api.delete(`/usuarios/${user.id}`, {
-        params: { userType: 'personal' },
+      await api.delete(`/usuarios/${user.id}`, {
+        params: { userType: 'useracadadmin' },
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       localStorage.removeItem('token');
@@ -55,7 +59,7 @@ const PerfilAcademiaPage = ({ user }) => {
       await api.delete(`/academia/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      setAcademias(prev => prev.filter((item) => item.id !== id));
+      setAcademia(null);
       toast.success('Academia excluída com sucesso.');
     } catch {
       toast.error('Erro ao excluir academia.');
@@ -96,45 +100,47 @@ const PerfilAcademiaPage = ({ user }) => {
         </div>
 
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-2xl font-semibold">Gerenciar Academias</h3>
-          <button
-            onClick={() => navigate('/cadastrar-academia')}
-            className="bg-black text-white px-4 py-2 rounded-lg border border-black hover:bg-white hover:text-black transition"
-          >
-            Cadastrar Academia
-          </button>
+          <h3 className="text-2xl font-semibold">Gerenciar Academia</h3>
+          {!academia && (
+            <button
+              onClick={() => navigate('/cadastrar-academia')}
+              className="bg-black text-white px-4 py-2 rounded-lg border border-black hover:bg-white hover:text-black transition"
+            >
+              Cadastrar Academia
+            </button>
+          )}
         </div>
 
         {loading ? (
-          <p className="text-center text-gray-500">Carregando academias...</p>
-        ) : (
+          <p className="text-center text-gray-500">Carregando academia...</p>
+        ) : academia ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {academias.map(gym => (
-              <div key={gym.id} className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition">
-                <div className="p-5">
-                  <h4 className="font-bold text-lg mb-2">{gym.nome}</h4>
-                  <p className="text-sm text-gray-600 mb-4">{gym.endereco}</p>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => navigate(`/academias/${gym.id}/editar`)}
-                      className="flex-1 text-sm px-4 py-2 border border-black rounded-lg hover:bg-black hover:text-white transition"
-                    >
-                      Ver Detalhes
-                    </button>
-                    <button
-                      onClick={() => {
-                        setSelectedAcademia(gym.id);
-                        setIsModalDeleteAcademiaIsOpen(true);
-                      }}
-                      className="flex-1 text-sm px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition"
-                    >
-                      Excluir
-                    </button>
-                  </div>
+            <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition">
+              <div className="p-5">
+                <h4 className="font-bold text-lg mb-2">{academia.nome}</h4>
+                <p className="text-sm text-gray-600 mb-4">{academia.endereco}</p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => navigate(`/academias/${academia.id}/editar`)}
+                    className="flex-1 text-sm px-4 py-2 border border-black rounded-lg hover:bg-black hover:text-white transition"
+                  >
+                    Ver Detalhes
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedAcademia(academia.id);
+                      setIsModalDeleteAcademiaIsOpen(true);
+                    }}
+                    className="flex-1 text-sm px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition"
+                  >
+                    Excluir
+                  </button>
                 </div>
               </div>
-            ))}
+            </div>
           </div>
+        ) : (
+          <p className="text-center text-gray-500">Nenhuma academia cadastrada.</p>
         )}
       </div>
 
