@@ -49,49 +49,7 @@ const Rodape = () => {
           </div>
         </div>
       </footer>
-      <ModalForm 
-        title="Termos de Uso"
-        description="
-          1. Sobre a Plataforma
-            Nossa plataforma conecta profissionais de educação física (personais) e alunos, permitindo a divulgação de perfis, informações de contato e avaliações dos profissionais.
 
-          2. Cadastro e Responsabilidades
-          O usuário deve fornecer informações verdadeiras no cadastro.
-
-          O personal trainer é responsável por manter atualizado seu perfil, incluindo dados como CREF, foto, telefone e e-mail.
-
-          Alunos devem utilizar a plataforma de forma ética e respeitosa.
-
-          3. Uso da Plataforma
-          É proibido qualquer uso que viole a lei, a moral ou os bons costumes.
-
-          É proibido divulgar informações falsas ou inapropriadas.
-
-          A comunicação entre usuários (ex.: via WhatsApp) é de inteira responsabilidade das partes envolvidas.
-
-          4. Privacidade dos Dados
-          Armazenamos apenas os dados necessários para funcionamento da plataforma.
-
-          Seus dados não são compartilhados com terceiros, exceto quando exigido por lei ou para funcionamento dos serviços (ex.: exibição de contatos públicos no perfil dos profissionais).
-
-          5. Limitação de Responsabilidade
-          Não garantimos a qualidade, pontualidade ou resultados dos serviços oferecidos pelos profissionais cadastrados.
-
-          A plataforma serve apenas como meio de divulgação e conexão entre usuários.
-
-          6. Avaliações e Comentários
-          Avaliações devem ser feitas de forma honesta, sem ofensas, discriminação ou conteúdo inapropriado.
-
-          A plataforma se reserva o direito de remover avaliações que violem este termo.
-
-          7. Alterações no Termo
-          Podemos atualizar este termo a qualquer momento. Recomendamos que o usuário revise periodicamente.
-        "
-        onClose={() => setIsModalTermIsOpen(false)}
-        onConfirm={() => {}}
-        loading={false}
-        isOpen={isModalTermIsOpen}
-      />
     </>
   );
 };
