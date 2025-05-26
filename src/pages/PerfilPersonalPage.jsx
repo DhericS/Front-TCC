@@ -24,7 +24,7 @@ const PerfilPersonalPage = ({ user }) => {
     const fetchTreino = async () => {
       setLoadingTreinos(true);
       try {
-        const res = await axios.get(`http://backend.guidesfit.com.br/treino?personalId=${user.id}`, {
+        const res = await axios.get(`http://localhost:8080/treino?personalId=${user.id}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         if (Array.isArray(res.data)) setTreinos(res.data);
@@ -39,7 +39,7 @@ const PerfilPersonalPage = ({ user }) => {
     const fetchDieta = async () => {
       setLoadingDietas(true);
       try {
-        const res = await axios.get(`http://backend.guidesfit.com.br/dieta?personalId=${user.id}`, {
+        const res = await axios.get(`http://localhost:8080/dieta?personalId=${user.id}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         if (Array.isArray(res.data)) setDietas(res.data);
@@ -96,7 +96,7 @@ const PerfilPersonalPage = ({ user }) => {
 
   const handleDeleteTreino = async (id) => {
     try {
-      await axios.delete(`http://backend.guidesfit.com.br/treino/${id}`, {
+      await axios.delete(`http://localhost:8080/treino/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setTreinos(treinos.filter((treino) => treino.id !== id));
@@ -108,7 +108,7 @@ const PerfilPersonalPage = ({ user }) => {
 
   const handleDeleteDieta = async (id) => {
     try {
-      await axios.delete(`http://backend.guidesfit.com.br/dieta/${id}`, {
+      await axios.delete(`http://localhost:8080/dieta/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setDietas(dietas.filter((dieta) => dieta.id !== id));
@@ -181,6 +181,14 @@ const PerfilPersonalPage = ({ user }) => {
         <div className="mb-10">
           <h3 className="text-2xl font-semibold text-black mb-6">🏋️‍♂️ Treinos Criados</h3>
 
+          <button
+            onClick={() => navigate('/treinos/cadastrar')}
+            className="px-5 py-2 rounded-lg border border-black bg-black text-white font-medium 
+            hover:bg-white hover:text-black transition-all shadow-md mb-4"
+          >
+            Cadastrar Treino
+          </button>
+
           {loadingTreinos ? (
             <div className="flex justify-center items-center h-24">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
@@ -226,6 +234,14 @@ const PerfilPersonalPage = ({ user }) => {
         {/* Dietas */}
         <div>
           <h3 className="text-2xl font-semibold text-black mb-6">🍎 Dietas Criadas</h3>
+
+          <button
+            onClick={() => navigate('/dietas/cadastrar')}
+            className="px-5 py-2 rounded-lg border border-black bg-black text-white font-medium 
+            hover:bg-white hover:text-black transition-all shadow-md mb-4"
+          >
+            Cadastrar Dieta
+          </button>
 
           {loadingDietas ? (
             <div className="flex justify-center items-center h-24">
