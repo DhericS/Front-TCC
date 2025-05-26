@@ -24,7 +24,7 @@ const FormDieta = ({ personalId, onSubmit }) => {
     setLoading(true);
 
     try {
-      const res = await axios.post('http://backend.guidesfit.com.br/dieta', form, {
+      const res = await axios.post('https://backend.guidesfit.com.br/dieta', form, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },

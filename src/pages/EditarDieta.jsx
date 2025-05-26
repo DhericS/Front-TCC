@@ -23,7 +23,7 @@ const EditarDieta = () => {
     const fetchDieta = async () => {
     setLoading(true);  
     try {
-        const res = await axios.get(`http://backend.guidesfit.com.br/dieta/${id}`, {
+        const res = await axios.get(`https://backend.guidesfit.com.br/dieta/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -50,7 +50,7 @@ const EditarDieta = () => {
     setLoadingSubmit(true);
 
     try {
-      await axios.put(`http://backend.guidesfit.com.br/dieta/${id}`, form, {
+      await axios.put(`https://backend.guidesfit.com.br/dieta/${id}`, form, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },

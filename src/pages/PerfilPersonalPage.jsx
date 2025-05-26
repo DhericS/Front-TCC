@@ -24,7 +24,7 @@ const PerfilPersonalPage = ({ user }) => {
     const fetchTreino = async () => {
       setLoadingTreinos(true);
       try {
-        const res = await axios.get(`http://localhost:8080/treino?personalId=${user.id}`, {
+        const res = await axios.get(`htts://backend.guidesfit.com.br/treino?personalId=${user.id}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         if (Array.isArray(res.data)) setTreinos(res.data);
@@ -39,7 +39,7 @@ const PerfilPersonalPage = ({ user }) => {
     const fetchDieta = async () => {
       setLoadingDietas(true);
       try {
-        const res = await axios.get(`http://localhost:8080/dieta?personalId=${user.id}`, {
+        const res = await axios.get(`htts://backend.guidesfit.com.br/dieta?personalId=${user.id}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         if (Array.isArray(res.data)) setDietas(res.data);
@@ -96,7 +96,7 @@ const PerfilPersonalPage = ({ user }) => {
 
   const handleDeleteTreino = async (id) => {
     try {
-      await axios.delete(`http://localhost:8080/treino/${id}`, {
+      await axios.delete(`htts://backend.guidesfit.com.br/treino/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setTreinos(treinos.filter((treino) => treino.id !== id));
@@ -108,7 +108,7 @@ const PerfilPersonalPage = ({ user }) => {
 
   const handleDeleteDieta = async (id) => {
     try {
-      await axios.delete(`http://localhost:8080/dieta/${id}`, {
+      await axios.delete(`'htts://backend.guidesfit.com.br/dieta/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setDietas(dietas.filter((dieta) => dieta.id !== id));
