@@ -12,6 +12,7 @@ const PerfilAdminPage = ({ user }) => {
 
     try {
       await api.delete(`/usuarios/${user.id}`, {
+        params: { userType: user.role },
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         },
