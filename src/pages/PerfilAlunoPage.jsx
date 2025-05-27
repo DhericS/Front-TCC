@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import ModalDialog from '../components/ModalDialog';
 import api from '../services/api';
 
+
 const PerfilAlunoPage = ({ user }) => {
   const navigate = useNavigate();
 
