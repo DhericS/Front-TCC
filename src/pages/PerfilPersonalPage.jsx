@@ -6,6 +6,7 @@ import FormDieta from '../components/FormDieta';
 import ModalDialog from '../components/ModalDialog';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import api from '../services/api';
 
 const PerfilPersonalPage = ({ user }) => {
   const [imagemUrl, setImagemUrl] = useState(user.imagemUrl || '');
@@ -88,6 +89,7 @@ const PerfilPersonalPage = ({ user }) => {
       localStorage.removeItem('token');
       navigate('/login');
     } catch (error) {
+      console.error('Erro ao excluir usuário:', error);
       toast.error('Erro ao excluir usuário.');
     }
   };

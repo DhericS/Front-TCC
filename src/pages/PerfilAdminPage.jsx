@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import api from '../services/api';
 
 const PerfilAdminPage = ({ user }) => {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ const PerfilAdminPage = ({ user }) => {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         },
         params: {
-          userType: user.tipoUsuario
+          userType: user.role
         }
       });
       localStorage.removeItem('token');

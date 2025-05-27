@@ -4,6 +4,7 @@ import axios from 'axios';
 import ReviewsEditar from '../components/ReviewsEditar';
 import { toast } from 'sonner';
 import ModalDialog from '../components/ModalDialog';
+import api from '../services/api';
 
 const PerfilAlunoPage = ({ user }) => {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const PerfilAlunoPage = ({ user }) => {
     try {
       setLoadingDelete(true)
       await api.delete(`/usuarios/${user.id}`, {
-        params: { userType: 'useracad' },
+        params: { userType: user.role },
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -25,6 +26,7 @@ const PerfilAlunoPage = ({ user }) => {
       localStorage.removeItem('token');
       navigate('/login');
     } catch (error) {
+      console.error('Erro ao excluir usuário:', error);
       toast.error('Erro ao excluir usuário.');
     } finally {
       setLoadingDelete(false)
