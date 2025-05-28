@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import api from '../services/api';
 import { motion } from 'framer-motion';
 import SkeletonImagePlaceholder from '../components/skeletons/SkeletonImagePlaceholder';
@@ -27,6 +27,40 @@ const AcademiasPage = () => {
   const [academiasExternas, setAcademiasExternas] = useState([]);
   const [filtros, setFiltros] = useState(filtrosPadrao);
   const [loading, setLoading] = useState(false);
+
+  const inputRef = useRef(null);
+
+  // Carrega Google Autocomplete no input de busca
+  useEffect(() => {
+    const loadAutocomplete = () => {
+      if (!window.google || !window.google.maps || !inputRef.current) return;
+
+      const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
+        types: ['geocode'],
+        componentRestrictions: { country: 'br' }
+      });
+
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if (place?.formatted_address) {
+          setSearch(place.formatted_address);
+          setFinalSearch(place.formatted_address);
+        }
+      });
+    };
+
+    // Se a API ainda não foi carregada, injeta o script
+    if (!window.google || !window.google.maps) {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+      script.async = true;
+      script.defer = true;
+      script.onload = loadAutocomplete;
+      document.head.appendChild(script);
+    } else {
+      loadAutocomplete();
+    }
+  }, [apiKey]);
 
   const handleCheckbox = (categoria, valor) => {
     setFiltros(prev => {
@@ -80,7 +114,7 @@ const AcademiasPage = () => {
   const handleSubmitSearch = (e) => {
     e.preventDefault();
     const termo = e.target.search.value.trim();
-    setFinalSearch(termo); // 🔥 ATUALIZA O FINAL SEARCH
+    setFinalSearch(termo);
   };
 
   return (
@@ -92,6 +126,7 @@ const AcademiasPage = () => {
           <div className="flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto mb-4">
             <form className="w-full flex items-center gap-2" onSubmit={handleSubmitSearch}>
               <input
+                ref={inputRef}
                 type="search"
                 placeholder="Digite o nome ou cidade"
                 name='search'
@@ -99,7 +134,9 @@ const AcademiasPage = () => {
                 onChange={(e) => setSearch(e.target.value)}
                 className="flex-grow min-w-[250px] px-4 py-2 rounded text-black"
               />
-              <button className='bg-white px-4 py-2 rounded text-black font-bold hover:scale-105 transition-all'>Buscar</button>
+              <button className='bg-white px-4 py-2 rounded text-black font-bold hover:scale-105 transition-all'>
+                Buscar
+              </button>
             </form>
           </div>
 
@@ -129,7 +166,7 @@ const AcademiasPage = () => {
           {loading && (
             <div className='w-full col-span-full'>
               <SkeletonImagePlaceholder />
-            </div>              
+            </div>
           )}
 
           {!loading && academias.length === 0 && academiasExternas.length === 0 && (
@@ -145,11 +182,11 @@ const AcademiasPage = () => {
           {!loading && academias.map((a, index) => (
             <motion.div
               key={a.id}
-              initial={{ opacity: 0, y: 50, rotateX: -15, blur: 5 }}
-              whileInView={{ opacity: 1, y: 0, rotateX: 0, blur: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.15, ease: 'easeOut' }}
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: index * 0.15 }}
               viewport={{ once: true }}
-              className="bg-gradient-to-br from-white to-gray-100 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 hover:rotate-[-1deg] cursor-pointer"
+              className="bg-gradient-to-br from-white to-gray-100 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 cursor-pointer"
               onClick={() => navigate(`/academias/${a.id}`)}
             >
               <div className="group relative">
