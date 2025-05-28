@@ -19,10 +19,11 @@ const opcoesFiltro = {
 
 const AcademiasPage = () => {
   const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
-
   const navigate = useNavigate();
+
   const [academias, setAcademias] = useState([]);
   const [search, setSearch] = useState('');
+  const [finalSearch, setFinalSearch] = useState('');
   const [academiasExternas, setAcademiasExternas] = useState([]);
   const [filtros, setFiltros] = useState(filtrosPadrao);
   const [loading, setLoading] = useState(false);
@@ -42,7 +43,7 @@ const AcademiasPage = () => {
   const buscarAcademiasExternas = async () => {
     try {
       const res = await api.get(`/academia/externas`, {
-        params: { endereco: encodeURIComponent(search) }
+        params: { endereco: finalSearch }
       });
       setAcademiasExternas(res.data);
     } catch (e) {
@@ -53,9 +54,8 @@ const AcademiasPage = () => {
 
   const buscarAcademias = async () => {
     setLoading(true);
-
     const params = new URLSearchParams();
-    if (search) params.append('search', search);
+    if (finalSearch) params.append('search', finalSearch);
     Object.entries(filtros).forEach(([key, valores]) => {
       valores.forEach(v => params.append(key, v));
     });
@@ -71,18 +71,17 @@ const AcademiasPage = () => {
   };
 
   useEffect(() => {
-      buscarAcademias();
-      if (finalSearch.length > 0) {
-        buscarAcademiasExternas();  
-      }
-    }, [finalSearch, filtros]);
-    
+    buscarAcademias();
+    if (finalSearch.length > 0) {
+      buscarAcademiasExternas();
+    }
+  }, [finalSearch, filtros]);
+
   const handleSubmitSearch = (e) => {
     e.preventDefault();
-    
-    setSearch(e.target.search.value.trim());
-    buscarAcademiasExternas();
-  }
+    const termo = e.target.search.value.trim();
+    setFinalSearch(termo); // 🔥 ATUALIZA O FINAL SEARCH
+  };
 
   return (
     <>
@@ -96,9 +95,10 @@ const AcademiasPage = () => {
                 type="search"
                 placeholder="Digite o nome ou cidade"
                 name='search'
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 className="flex-grow min-w-[250px] px-4 py-2 rounded text-black"
               />
-
               <button className='bg-white px-4 py-2 rounded text-black font-bold hover:scale-105 transition-all'>Buscar</button>
             </form>
           </div>
