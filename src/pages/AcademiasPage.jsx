@@ -71,9 +71,12 @@ const AcademiasPage = () => {
   };
 
   useEffect(() => {
-    buscarAcademias();
-  }, [search, filtros]);
-
+      buscarAcademias();
+      if (finalSearch.length > 0) {
+        buscarAcademiasExternas();  
+      }
+    }, [finalSearch, filtros]);
+    
   const handleSubmitSearch = (e) => {
     e.preventDefault();
     
