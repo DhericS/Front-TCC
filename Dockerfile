@@ -10,7 +10,6 @@ RUN echo "VITE_GOOGLE_API_KEY=${VITE_GOOGLE_API_KEY}" > .env && \
     echo "VITE_API_BASE_URL=${VITE_API_BASE_URL}" >> .env
 
 COPY package*.json ./
-COPY .env.production .env
 RUN npm install
 COPY . .
 RUN npm run build
