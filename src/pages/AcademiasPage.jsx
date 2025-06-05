@@ -13,8 +13,7 @@ const filtrosPadrao = {
 
 const opcoesFiltro = {
   tipos: ['CONVENCIONAL', 'CROSSFIT'],
-  estruturas: ['ACESSIBILIDADE', 'ESTACIONAMENTO', 'VESTIARIO', 'BEBEDOURO', 'ARMARIOS', 'AR_CONDICIONADO', 'WIFI'],
-  servicos: ['AVALIACAO_INICIAL', 'NUTRICIONAL', 'PERSONAL', 'TREINOS', 'APP', 'WHATSAPP', 'VINTE_QUATRO_HORAS']
+  estruturas: ['ACESSIBILIDADE', 'ESTACIONAMENTO', 'VESTIARIO', 'BEBEDOURO', 'ARMARIOS', 'AR_CONDICIONADO', 'WIFI']
 };
 
 const AcademiasPage = () => {
@@ -173,7 +172,7 @@ const AcademiasPage = () => {
 
           {!loading && academias.length > 0 && (
             <div className="col-span-full mb-4">
-              <h3 className="text-2xl font-bold text-black">Academias Cadastradas</h3>
+              <h3 className="text-2xl font-bold text-black">Academias</h3>
             </div>
           )}
 
@@ -206,9 +205,7 @@ const AcademiasPage = () => {
 
           {!loading && academiasExternas.length > 0 && (
             <>
-              <div className="col-span-full mt-10 mb-4">
-                <h3 className="text-2xl font-bold text-black">Academias Externas</h3>
-              </div>
+
               {academiasExternas.map((a, index) => (
                 <motion.div
                   key={a.placeId}
