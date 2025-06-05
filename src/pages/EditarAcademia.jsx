@@ -16,6 +16,21 @@ const diaLabel = {
   DOMINGO: 'Domingo'
 };
 
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+    },
+  },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0 },
+};
+
 const EditarAcademia = () => {
   const { id } = useParams();
   const [academia, setAcademia] = useState(null);
@@ -119,56 +134,28 @@ const EditarAcademia = () => {
   }
 
   return (
-    <section className="bg-white py-16 px-4">
+    <section className="bg-white py-16 px-6 min-h-screen">
       <div className="max-w-6xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-8"
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center mb-12"
         >
-          <div>
-            <img
-              src={academia.imagemUrl || '/assets/imagens/default-background.jpg'}
-              alt={academia.nome}
-              className="w-full h-72 object-cover rounded-2xl shadow-md mb-4"
-            />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleUploadImagem}
-              className="hidden"
-              id="upload-image"
-              disabled={uploading}
-            />
-            <label
-              htmlFor="upload-image"
-              className={`inline-block cursor-pointer px-6 py-2 rounded-full border border-black text-black font-semibold hover:bg-black hover:text-white transition ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-              {uploading ? 'Enviando...' : 'Alterar imagem da academia'}
-            </label>
-            <button
-              onClick={() => {
-                setSelectedItem(academia.id);
-                setIsModalDeleteAcademiaIsOpen(true);
-              }}
-              className="mt-4 bg-red-600 text-white py-2 px-5 rounded-full hover:bg-red-700 transition"
-            >
-              Deletar Academia
-            </button>
-          </div>
-
-          <div className="flex flex-col justify-between">
-            <div>
-              <h2 className="text-4xl font-bold mb-3">{academia.nome}</h2>
-              <p className="text-lg text-gray-600 mb-2">{academia.endereco}</p>
-              <p className="text-md text-gray-700 mb-4">{academia.descricao}</p>
-              <span className="inline-block bg-black text-white text-sm px-4 py-1 rounded-full">
-                {academia.tipoAcad}
-              </span>
-            </div>
-
-            <div className="mt-6 flex gap-4 flex-wrap">
+          <motion.img
+            variants={item}
+            src={academia.imagemUrl || '/assets/imagens/default-background.jpg'}
+            alt={academia.nome}
+            className="w-full h-72 md:h-96 object-cover rounded-3xl shadow-xl"
+          />
+          <motion.div variants={item} className="flex flex-col gap-4">
+            <h2 className="text-4xl font-extrabold text-black">{academia.nome}</h2>
+            <p className="text-gray-600">{academia.endereco}</p>
+            <p className="text-gray-700">{academia.descricao}</p>
+            <span className="inline-block bg-black text-white text-sm px-4 py-1 rounded-full w-fit">
+              {academia.tipoAcad}
+            </span>
+            <div className="flex flex-wrap gap-4 mt-4">
               <Link to={`/academias/${academia.id}/editar/dados`} className="bg-black text-white py-2 px-5 rounded-full hover:bg-gray-800 transition">
                 Editar Dados da Academia
               </Link>
@@ -179,43 +166,60 @@ const EditarAcademia = () => {
                 Cadastrar Atividade
               </Link>
             </div>
-          </div>
+          </motion.div>
         </motion.div>
 
-        {/* Listagem de Planos */}
-        {academia.planos && academia.planos.length > 0 && (
-          <div className="mt-10">
-            <h3 className="text-2xl font-semibold mb-4">Planos Cadastrados</h3>
-            <div className="space-y-3">
-              {academia.planos.map((plano) => (
-                <div key={plano.id} className="bg-gray-100 p-4 rounded-lg flex justify-between items-center shadow-sm">
-                  <span className="font-semibold">{plano.nome} - R$ {plano.preco}</span>
-                  <div className="flex gap-2">
-                    <Link to={`/planos/editar/${plano.id}`} className="px-4 py-1 bg-black text-white rounded hover:bg-gray-800 transition">Editar</Link>
-                    <button onClick={() => { setSelectedItem(plano.id); setIsModalDeletePlanoOpen(true); }} className="px-4 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition">Excluir</button>
+        {/* Atividades */}
+        {academia.atividades?.length > 0 && (
+          <motion.div variants={container} initial="hidden" animate="show" className="mt-10">
+            <h3 className="text-2xl font-bold mb-6">Atividades</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {academia.atividades.map((a) => (
+                <motion.div
+                  key={a.id}
+                  variants={item}
+                  className="bg-white rounded-2xl p-5 shadow-lg hover:shadow-2xl transition-all relative"
+                >
+                  <p className="text-black font-semibold">
+                    {diaLabel[a.diaSemana] || a.diaSemana} - {a.horario}
+                  </p>
+                  <p className="text-gray-600 mb-3">{a.nome}</p>
+                  <div className="absolute top-2 right-2 flex gap-2">
+                    <Link to={`/atividades/editar/${a.id}`} className="text-xs bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded">Editar</Link>
+                    <button onClick={() => { setSelectedItem(a.id); setIsModalDeleteAtividadeOpen(true); }} className="text-xs bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded">Excluir</button>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
-          </div>
+          </motion.div>
         )}
 
-        {/* Listagem de Atividades */}
-        {academia.atividades && academia.atividades.length > 0 && (
-          <div className="mt-10">
-            <h3 className="text-2xl font-semibold mb-4">Atividades Cadastradas</h3>
-            <div className="space-y-3">
-              {academia.atividades.map((atividade) => (
-                <div key={atividade.id} className="bg-gray-100 p-4 rounded-lg flex justify-between items-center shadow-sm">
-                  <span className="font-semibold">{atividade.nome} - {diaLabel[atividade.diaSemana]} às {atividade.horario}</span>
-                  <div className="flex gap-2">
-                    <Link to={`/atividades/editar/${atividade.id}`} className="px-4 py-1 bg-black text-white rounded hover:bg-gray-800 transition">Editar</Link>
-                    <button onClick={() => { setSelectedItem(atividade.id); setIsModalDeleteAtividadeOpen(true); }} className="px-4 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition">Excluir</button>
+        {/* Planos */}
+        {academia.planos?.length > 0 && (
+          <motion.div variants={container} initial="hidden" animate="show" className="mt-20">
+            <h3 className="text-2xl font-bold mb-6">Planos disponíveis</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {academia.planos.map((p) => (
+                <motion.div
+                  key={p.id}
+                  variants={item}
+                  className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all relative"
+                >
+                  <div>
+                    <h4 className="text-lg font-bold mb-2">{p.nome}</h4>
+                    <p className="text-gray-600 mb-4">{p.descricao}</p>
                   </div>
-                </div>
+                  <p className="text-3xl font-extrabold text-black">
+                    R$ {typeof p.preco === 'number' ? p.preco.toFixed(2) : '---'}
+                  </p>
+                  <div className="absolute top-2 right-2 flex gap-2">
+                    <Link to={`/planos/editar/${p.id}`} className="text-xs bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded">Editar</Link>
+                    <button onClick={() => { setSelectedItem(p.id); setIsModalDeletePlanoOpen(true); }} className="text-xs bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded">Excluir</button>
+                  </div>
+                </motion.div>
               ))}
             </div>
-          </div>
+          </motion.div>
         )}
 
         <ModalDialog
