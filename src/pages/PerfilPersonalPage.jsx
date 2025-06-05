@@ -182,7 +182,7 @@ const PerfilPersonalPage = ({ user }) => {
 
         {/* Treinos */}
         <div className="mb-10">
-          <h3 className="text-2xl font-semibold text-black mb-6">🏋️‍♂️ Treinos Criados</h3>
+          <h3 className="text-2xl font-semibold text-black mb-6">🏋️‍♂️ Treinos</h3>
 
           <button
             onClick={() => navigate('/treinos/cadastrar')}
@@ -236,7 +236,7 @@ const PerfilPersonalPage = ({ user }) => {
 
         {/* Dietas */}
         <div>
-          <h3 className="text-2xl font-semibold text-black mb-6">🍎 Dietas Criadas</h3>
+          <h3 className="text-2xl font-semibold text-black mb-6">🍎 Dietas</h3>
 
           <button
             onClick={() => navigate('/dietas/cadastrar')}

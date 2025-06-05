@@ -152,14 +152,6 @@ const PerfilAcademiaPage = ({ user }) => {
         description="Tem certeza que deseja deletar sua conta? Esta ação não pode ser desfeita."
         loading={handleLoading}
       />
-      <ModalDialog
-        isOpen={isModalDeleteAcademiaIsOpen}
-        onClose={() => setIsModalDeleteAcademiaIsOpen(false)}
-        title="Deletar Academia"
-        onConfirm={() => handleDeleteAcademia(selectedAcademia)}
-        description="Tem certeza que deseja deletar esta academia? Esta ação não pode ser desfeita."
-        loading={handleLoading}
-      />
     </div>
   );
 };
