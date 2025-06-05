@@ -25,6 +25,7 @@ const DetalhesAcademiaExternaPage = () => {
         <p className="mb-2"><strong>Site:</strong> {detalhes.site || "Não informado"}</p>
         <p className="mb-2"><strong>Avaliação:</strong> ⭐ {detalhes.avaliacao} ({detalhes.totalAvaliacoes})</p>
         <p className="mb-2"><strong>Aberta Agora:</strong> {detalhes.abertaAgora ? "Sim" : "Não"}</p>
+        <p className="mb-4 text-red-600 font-semibold italic border-l-4 border-red-500 pl-4">⚠️ As informações e imagens apresentadas são fornecidas por terceiros. A GuidesFit não se responsabiliza pela veracidade ou atualidade do conteúdo exibido.</p>
         <p className="mb-4">
           <strong>Horários:</strong>{" "}
           {Array.isArray(detalhes.horarios) ? detalhes.horarios.join(", ") : "Não informado"}
