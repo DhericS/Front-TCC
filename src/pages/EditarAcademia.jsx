@@ -182,7 +182,41 @@ const EditarAcademia = () => {
           </div>
         </motion.div>
 
-        {/* Atividades e planos mantidos igual */}
+        {/* Listagem de Planos */}
+        {academia.planos && academia.planos.length > 0 && (
+          <div className="mt-10">
+            <h3 className="text-2xl font-semibold mb-4">Planos Cadastrados</h3>
+            <div className="space-y-3">
+              {academia.planos.map((plano) => (
+                <div key={plano.id} className="bg-gray-100 p-4 rounded-lg flex justify-between items-center shadow-sm">
+                  <span className="font-semibold">{plano.nome} - R$ {plano.preco}</span>
+                  <div className="flex gap-2">
+                    <Link to={`/planos/editar/${plano.id}`} className="px-4 py-1 bg-black text-white rounded hover:bg-gray-800 transition">Editar</Link>
+                    <button onClick={() => { setSelectedItem(plano.id); setIsModalDeletePlanoOpen(true); }} className="px-4 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition">Excluir</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Listagem de Atividades */}
+        {academia.atividades && academia.atividades.length > 0 && (
+          <div className="mt-10">
+            <h3 className="text-2xl font-semibold mb-4">Atividades Cadastradas</h3>
+            <div className="space-y-3">
+              {academia.atividades.map((atividade) => (
+                <div key={atividade.id} className="bg-gray-100 p-4 rounded-lg flex justify-between items-center shadow-sm">
+                  <span className="font-semibold">{atividade.nome} - {diaLabel[atividade.diaSemana]} às {atividade.horario}</span>
+                  <div className="flex gap-2">
+                    <Link to={`/atividades/editar/${atividade.id}`} className="px-4 py-1 bg-black text-white rounded hover:bg-gray-800 transition">Editar</Link>
+                    <button onClick={() => { setSelectedItem(atividade.id); setIsModalDeleteAtividadeOpen(true); }} className="px-4 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition">Excluir</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <ModalDialog
           isOpen={isModalDeletePlanoOpen}
