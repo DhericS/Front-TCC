@@ -90,7 +90,7 @@ const PerfilAlunoPage = ({ user }) => {
               id="upload-photo"
             />
             <label htmlFor="upload-photo" className="cursor-pointer text-blue-600 hover:underline">
-              {uploading ? 'Enviando...' : 'Clique aqui para mudar sua foto de perfil'}
+              {uploading ? 'Enviando...' : 'Alterar foto de perfil'}
             </label>
           </div>
 

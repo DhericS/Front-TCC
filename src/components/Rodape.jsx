@@ -44,7 +44,7 @@ const Rodape = () => {
               </a>
             </p>
             <button className="mt-2 text-blue-600 px-4 py-2 rounded" onClick={() => setIsModalTermIsOpen(true)}>
-                Termos de Uso
+                Termos de Uso e Privacidade
             </button>
           </div>
         </div>

@@ -145,7 +145,7 @@ const PerfilPersonalPage = ({ user }) => {
           disabled={uploading}
         />
         <label htmlFor="upload-photo" className="cursor-pointer text-blue-600 hover:underline">
-          {uploading ? 'Enviando...' : 'Clique aqui para mudar sua foto de perfil'}
+          {uploading ? 'Enviando...' : 'Alterar foto de perfil'}
         </label>
       </div>
 
