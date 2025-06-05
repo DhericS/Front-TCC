@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useGetUser } from '../hooks/useGetUser';
+import Avaliacoes from '../components/Avaliacoes';
 import SkeletonParagraphs from '../components/skeletons/SkeletonParagraphs';
+import Reviews from '../components/Reviews';
 import NewReview from '../components/NewReview';
 import { toast } from 'sonner';
 import api from '../services/api';
@@ -21,6 +24,7 @@ const DetalhesTreinoPage = () => {
 
   const [treino, setTreino] = useState(null);
   const { user, loading: loadingUsuario } = useGetUser();
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -38,15 +42,23 @@ const DetalhesTreinoPage = () => {
     fetchTreino();
   }, [id, navigate]);
 
-  if (loading || loadingUsuario) {
+  if (loading) {
     return (
       <div className="w-full flex justify-center mt-6">
         <SkeletonParagraphs />
       </div>
-    );
+    )
   }
 
   if (!treino) return <div className="p-8 text-center text-red-600">Treino não encontrado.</div>;
+
+  if (loadingUsuario) {
+    return (
+      <div className="w-full flex justify-center mt-6">
+        <SkeletonParagraphs />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -58,7 +70,7 @@ const DetalhesTreinoPage = () => {
 
         <section>
           <h2 className="text-3xl font-semibold mb-6 text-gray-900">Exercícios</h2>
-          {!treino.exercicios || treino.exercicios.length === 0 ? (
+          {treino.exercicios.length === 0 ? (
             <p className="text-gray-600 italic">Nenhum exercício cadastrado para este treino.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -93,14 +105,14 @@ const DetalhesTreinoPage = () => {
           ← Voltar para lista de treinos
         </Link>
 
-        <div className='flex flex-col gap-3 mt-8'>
+        <div className='flex flex-col gap-3'>
           <ReviewsDynamic
             user={user}
             entidadeId={treino.id}
             tipoEntidade={'TREINO'}
           />
           {user && (
-            <NewReview
+            <NewReview 
               entidadeId={treino.id}
               tipoEntidade={'TREINO'}
               user={user}
