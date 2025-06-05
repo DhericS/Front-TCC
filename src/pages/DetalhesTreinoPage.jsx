@@ -18,7 +18,7 @@ const gruposMuscularesLabels = {
   OMBROS: 'Ombros',
 };
 
-const DietasTreinoPage = () => {
+const DetalhesTreinoPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -124,4 +124,4 @@ const DietasTreinoPage = () => {
   );
 };
 
-export default DietasTreinoPage;
+export default DetalhesTreinoPage;
