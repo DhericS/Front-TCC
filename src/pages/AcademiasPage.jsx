@@ -30,7 +30,6 @@ const AcademiasPage = () => {
 
   const inputRef = useRef(null);
 
-  // Carrega Google Autocomplete no input de busca
   useEffect(() => {
     const loadAutocomplete = () => {
       if (!window.google || !window.google.maps || !inputRef.current) return;
@@ -49,7 +48,6 @@ const AcademiasPage = () => {
       });
     };
 
-    // Se a API ainda não foi carregada, injeta o script
     if (!window.google || !window.google.maps) {
       const script = document.createElement('script');
       script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
