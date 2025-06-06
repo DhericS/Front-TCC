@@ -1,3 +1,4 @@
+// pages/AcademiasPage.jsx
 import React, { useEffect, useRef, useState } from 'react';
 import api from '../services/api';
 import { motion } from 'framer-motion';
@@ -27,8 +28,7 @@ const AcademiasPage = () => {
   const [filtros, setFiltros] = useState(filtrosPadrao);
   const [loading, setLoading] = useState(false);
   const [paginaAtual, setPaginaAtual] = useState(1);
-  const [paginaExterna, setPaginaExterna] = useState(1);
-  const itensPorPagina = 12;
+  const itensPorPagina = 9;
 
   const inputRef = useRef(null);
 
@@ -115,7 +115,6 @@ const AcademiasPage = () => {
 
   useEffect(() => {
     setPaginaAtual(1);
-    setPaginaExterna(1);
     buscarAcademias();
     if (finalSearch.length > 0) {
       buscarAcademiasExternas();
@@ -132,13 +131,49 @@ const AcademiasPage = () => {
   const indexFim = indexInicio + itensPorPagina;
   const academiasPaginadas = academias.slice(indexInicio, indexFim);
 
-  const indexInicioExt = (paginaExterna - 1) * itensPorPagina;
-  const indexFimExt = indexInicioExt + itensPorPagina;
-  const academiasExternasPaginadas = academiasExternas.slice(indexInicioExt, indexFimExt);
-
   return (
     <>
-      {/* ... conteúdo da barra de busca e filtros permanece o mesmo ... */}
+      <section className="bg-black text-white py-16 px-6 w-full">
+        <div className="max-w-7xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-6">Encontre uma Academia</h2>
+
+          <div className="flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto mb-4">
+            <form className="w-full flex items-center gap-2" onSubmit={handleSubmitSearch}>
+              <input
+                ref={inputRef}
+                type="search"
+                placeholder="Digite o nome ou cidade"
+                name='search'
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="flex-grow min-w-[250px] px-4 py-2 rounded text-black"
+              />
+              <button className='bg-white px-4 py-2 rounded text-black font-bold hover:scale-105 transition-all'>
+                Buscar
+              </button>
+            </form>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-6 max-w-4xl mx-auto text-left">
+            {Object.entries(opcoesFiltro).map(([categoria, opcoes]) => (
+              <div key={categoria} className="min-w-[10rem]">
+                <h4 className="font-bold mb-2 uppercase text-sm">{categoria}</h4>
+                {opcoes.map(opcao => (
+                  <label key={opcao} className="block text-white text-sm cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="mr-2"
+                      checked={filtros[categoria].includes(opcao)}
+                      onChange={() => handleCheckbox(categoria, opcao)}
+                    />
+                    {opcao}
+                  </label>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <section className="py-16 px-6 bg-white min-h-screen">
         <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
@@ -194,9 +229,11 @@ const AcademiasPage = () => {
               >
                 Anterior
               </button>
+
               <span className="px-4 py-2 text-black font-bold">
                 Página {paginaAtual}
               </span>
+
               <button
                 onClick={() =>
                   setPaginaAtual(p =>
@@ -211,9 +248,9 @@ const AcademiasPage = () => {
             </div>
           )}
 
-          {!loading && academiasExternasPaginadas.length > 0 && (
+          {!loading && academiasExternas.length > 0 && (
             <>
-              {academiasExternasPaginadas.map((a, index) => (
+              {academiasExternas.map((a, index) => (
                 <motion.div
                   key={a.placeId}
                   initial={{ opacity: 0, y: 20 }}
@@ -239,32 +276,6 @@ const AcademiasPage = () => {
                   </div>
                 </motion.div>
               ))}
-
-              {academiasExternas.length > itensPorPagina && (
-                <div className="col-span-full flex justify-center mt-6 gap-2">
-                  <button
-                    onClick={() => setPaginaExterna(p => Math.max(p - 1, 1))}
-                    disabled={paginaExterna === 1}
-                    className="px-4 py-2 bg-gray-200 text-black rounded disabled:opacity-50"
-                  >
-                    Anterior
-                  </button>
-                  <span className="px-4 py-2 text-black font-bold">
-                    Página {paginaExterna}
-                  </span>
-                  <button
-                    onClick={() =>
-                      setPaginaExterna(p =>
-                        p * itensPorPagina < academiasExternas.length ? p + 1 : p
-                      )
-                    }
-                    disabled={paginaExterna * itensPorPagina >= academiasExternas.length}
-                    className="px-4 py-2 bg-gray-200 text-black rounded disabled:opacity-50"
-                  >
-                    Próxima
-                  </button>
-                </div>
-              )}
             </>
           )}
         </div>
