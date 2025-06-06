@@ -7,6 +7,7 @@ import api from '../services/api';
 const EditarPerfilPage = () => {
   const navigate = useNavigate();
   const { user, loading } = useGetUser();
+
   const [form, setForm] = useState({
     nome: '',
     email: '',
@@ -20,7 +21,11 @@ const EditarPerfilPage = () => {
   useEffect(() => {
     if (loading || !user) return;
 
-    const tipo = user.tipoUsuario || user.role || '';
+    // Força detecção robusta
+    const tipo =
+      user.tipoUsuario?.toUpperCase() ||
+      user.role?.toUpperCase() ||
+      '';
 
     setForm({
       nome: user.nome || '',
@@ -61,7 +66,7 @@ const EditarPerfilPage = () => {
       navigate(-1);
     } catch (err) {
       console.error(err);
-      toast.error('Erro ao atualizar perfil.');
+      toast.error(err.response?.data?.cnpj || err.response?.data?.cref || 'Erro ao atualizar perfil.');
     }
   };
 
