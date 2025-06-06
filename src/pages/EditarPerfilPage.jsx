@@ -21,11 +21,8 @@ const EditarPerfilPage = () => {
   useEffect(() => {
     if (loading || !user) return;
 
-    // Força detecção robusta
-    const tipo =
-      user.tipoUsuario?.toUpperCase() ||
-      user.role?.toUpperCase() ||
-      '';
+    const tipo = (user.tipoUsuario || user.role || '').toUpperCase();
+    console.log('Tipo detectado:', tipo); // debug opcional
 
     setForm({
       nome: user.nome || '',
@@ -66,7 +63,11 @@ const EditarPerfilPage = () => {
       navigate(-1);
     } catch (err) {
       console.error(err);
-      toast.error(err.response?.data?.cnpj || err.response?.data?.cref || 'Erro ao atualizar perfil.');
+      toast.error(
+        err.response?.data?.cnpj ||
+        err.response?.data?.cref ||
+        'Erro ao atualizar perfil.'
+      );
     }
   };
 
