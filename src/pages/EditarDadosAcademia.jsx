@@ -9,7 +9,6 @@ const EditarDadosAcademia = () => {
   const [form, setForm] = useState({
     nome: '',
     endereco: '',
-    descricao: '',
     tipoAcad: ''
   });
   const [loading, setLoading] = useState(false);
@@ -23,7 +22,6 @@ const EditarDadosAcademia = () => {
         setForm({
           nome: res.data.nome,
           endereco: res.data.endereco,
-          descricao: res.data.descricao,
           tipoAcad: res.data.tipoAcad,
           telefone: res.data.telefone
         });
