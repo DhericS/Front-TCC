@@ -86,20 +86,31 @@ const AcademiasPage = () => {
   const buscarAcademias = async () => {
     setLoading(true);
     const params = new URLSearchParams();
-    if (finalSearch) params.append('search', finalSearch);
     Object.entries(filtros).forEach(([key, valores]) => {
       valores.forEach(v => params.append(key, v));
     });
 
     try {
       const res = await api.get(`/academia/filtro?${params.toString()}`);
-      setAcademias(res.data);
+      let lista = res.data;
+
+      // Filtrar por endereço no frontend
+      if (finalSearch.trim() !== '') {
+        const termo = finalSearch.toLowerCase();
+        lista = lista.filter(a =>
+          a.endereco?.toLowerCase().includes(termo) ||
+          a.nome?.toLowerCase().includes(termo)
+        );
+      }
+
+      setAcademias(lista);
     } catch {
       setAcademias([]);
     } finally {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     buscarAcademias();
