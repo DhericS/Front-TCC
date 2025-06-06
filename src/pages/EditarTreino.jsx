@@ -92,7 +92,7 @@ const EditarTreino = () => {
       await api.put(`/treino/${id}`, {
         ...form,
         exercicios: exercicios,
-        personalId: form.personal.id,
+        personalId: form.personal?.id ?? null
       }, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
