@@ -21,8 +21,7 @@ const EditarPerfilPage = () => {
   useEffect(() => {
     if (loading || !user) return;
 
-    const tipo = (user.tipoUsuario || user.role || '').toUpperCase();
-    console.log('Tipo detectado:', tipo); // debug opcional
+    const tipo = (user.tipoUsuario || user.role || '').toLowerCase();
 
     setForm({
       nome: user.nome || '',
@@ -30,8 +29,8 @@ const EditarPerfilPage = () => {
       telefone: user.telefone || '',
       senha: '',
       tipoUsuario: tipo,
-      cnpj: tipo === 'USERACADADMIN' ? user.cnpj || '' : '',
-      cref: tipo === 'PERSONAL' ? user.cref || '' : ''
+      cnpj: tipo === 'useracadadmin' ? user.cnpj || '' : '',
+      cref: tipo === 'personal' ? user.cref || '' : ''
     });
   }, [loading, user]);
 
@@ -51,8 +50,8 @@ const EditarPerfilPage = () => {
       senha: form.senha
     };
 
-    if (form.tipoUsuario === 'USERACADADMIN') payload.cnpj = form.cnpj;
-    if (form.tipoUsuario === 'PERSONAL') payload.cref = form.cref;
+    if (form.tipoUsuario === 'useracadadmin') payload.cnpj = form.cnpj;
+    if (form.tipoUsuario === 'personal') payload.cref = form.cref;
 
     try {
       await api.put(`/usuarios/atualizar`, payload, {
@@ -92,14 +91,14 @@ const EditarPerfilPage = () => {
             <input type="text" name="telefone" value={form.telefone} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2" required />
           </div>
 
-          {form.tipoUsuario === 'USERACADADMIN' && (
+          {form.tipoUsuario === 'useracadadmin' && (
             <div>
               <label className="block font-semibold">CNPJ</label>
               <input type="text" name="cnpj" value={form.cnpj} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2" required />
             </div>
           )}
 
-          {form.tipoUsuario === 'PERSONAL' && (
+          {form.tipoUsuario === 'personal' && (
             <div>
               <label className="block font-semibold">CREF</label>
               <input type="text" name="cref" value={form.cref} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2" required />
