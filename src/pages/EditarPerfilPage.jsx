@@ -30,25 +30,32 @@ const EditarPerfilPage = () => {
       telefone: user.telefone || '',
       senha: '',
       tipoUsuario: user.tipoUsuario || '',
-      cref: user.cref || '',
-      cnpj: user.cnpj || ''
+      cref: user.tipoUsuario === 'PERSONAL' ? user.cref || '' : '',
+      cnpj: user.tipoUsuario === 'USERACADADMIN' ? user.cnpj || '' : ''
     });
   }, [loading]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const payload = {
+      id: user.id,
+      tipoUsuario: form.tipoUsuario,
+      nome: form.nome,
+      email: form.email,
+      telefone: form.telefone,
+      senha: form.senha
+    };
+
+    if (form.tipoUsuario === 'PERSONAL') payload.cref = form.cref;
+    if (form.tipoUsuario === 'USERACADADMIN') payload.cnpj = form.cnpj;
+
     try {
-      await api.put(`/usuarios/atualizar`, {
-        ...form,
-        id: user.id,
-        tipoUsuario: user.tipoUsuario
-      }, {
+      await api.put('/usuarios/atualizar', payload, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
 
@@ -144,7 +151,7 @@ const EditarPerfilPage = () => {
 
           <button
             type="submit"
-            className="w-full bg-black text-white py-2 px-4 rounded-md border border-black hover:bg-white hover:text-black transition"
+            className="w-full bg-black text-white py-2 px-4 rounded-md border border-black hover:bg-white hover:text-black transition disabled:opacity-50"
             disabled={loading}
           >
             {loading ? 'Carregando...' : 'Salvar Alterações'}
