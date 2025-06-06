@@ -85,17 +85,6 @@ const EditarDadosAcademia = () => {
           />
         </div>
         <div>
-          <label className="block mb-1">Descrição</label>
-          <textarea
-            name="descricao"
-            value={form.descricao}
-            onChange={handleChange}
-            rows="4"
-            required
-            className="w-full border px-4 py-2 rounded-lg"
-          />
-        </div>
-        <div>
           <label className="block mb-1">Telefone</label>
           <input
             type="text"
