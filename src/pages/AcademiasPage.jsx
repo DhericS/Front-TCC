@@ -1,3 +1,4 @@
+// pages/AcademiasPage.jsx
 import React, { useEffect, useRef, useState } from 'react';
 import api from '../services/api';
 import { motion } from 'framer-motion';
@@ -26,6 +27,8 @@ const AcademiasPage = () => {
   const [academiasExternas, setAcademiasExternas] = useState([]);
   const [filtros, setFiltros] = useState(filtrosPadrao);
   const [loading, setLoading] = useState(false);
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const itensPorPagina = 12;
 
   const inputRef = useRef(null);
 
@@ -94,7 +97,6 @@ const AcademiasPage = () => {
       const res = await api.get(`/academia/filtro?${params.toString()}`);
       let lista = res.data;
 
-      // Filtrar por endereço no frontend
       if (finalSearch.trim() !== '') {
         const termo = finalSearch.toLowerCase();
         lista = lista.filter(a =>
@@ -111,8 +113,8 @@ const AcademiasPage = () => {
     }
   };
 
-
   useEffect(() => {
+    setPaginaAtual(1);
     buscarAcademias();
     if (finalSearch.length > 0) {
       buscarAcademiasExternas();
@@ -124,6 +126,10 @@ const AcademiasPage = () => {
     const termo = e.target.search.value.trim();
     setFinalSearch(termo);
   };
+
+  const indexInicio = (paginaAtual - 1) * itensPorPagina;
+  const indexFim = indexInicio + itensPorPagina;
+  const academiasPaginadas = academias.slice(indexInicio, indexFim);
 
   return (
     <>
@@ -187,7 +193,7 @@ const AcademiasPage = () => {
             </div>
           )}
 
-          {!loading && academias.map((a, index) => (
+          {!loading && academiasPaginadas.map((a, index) => (
             <motion.div
               key={a.id}
               initial={{ opacity: 0, y: 50 }}
@@ -214,9 +220,36 @@ const AcademiasPage = () => {
             </motion.div>
           ))}
 
+          {!loading && academias.length > itensPorPagina && (
+            <div className="col-span-full flex justify-center mt-6 gap-2">
+              <button
+                onClick={() => setPaginaAtual(p => Math.max(p - 1, 1))}
+                disabled={paginaAtual === 1}
+                className="px-4 py-2 bg-gray-200 text-black rounded disabled:opacity-50"
+              >
+                Anterior
+              </button>
+
+              <span className="px-4 py-2 text-black font-bold">
+                Página {paginaAtual}
+              </span>
+
+              <button
+                onClick={() =>
+                  setPaginaAtual(p =>
+                    p * itensPorPagina < academias.length ? p + 1 : p
+                  )
+                }
+                disabled={paginaAtual * itensPorPagina >= academias.length}
+                className="px-4 py-2 bg-gray-200 text-black rounded disabled:opacity-50"
+              >
+                Próxima
+              </button>
+            </div>
+          )}
+
           {!loading && academiasExternas.length > 0 && (
             <>
-
               {academiasExternas.map((a, index) => (
                 <motion.div
                   key={a.placeId}
