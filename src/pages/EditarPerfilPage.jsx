@@ -13,27 +13,25 @@ const EditarPerfilPage = () => {
     telefone: '',
     senha: '',
     tipoUsuario: '',
-    cref: '',
-    cnpj: ''
+    cnpj: '',
+    cref: ''
   });
 
   useEffect(() => {
-    if (loading) return;
-    if (!user) {
-      navigate('/login');
-      return;
-    }
+    if (loading || !user) return;
+
+    const tipo = user.tipoUsuario || user.role || '';
 
     setForm({
       nome: user.nome || '',
       email: user.email || '',
       telefone: user.telefone || '',
       senha: '',
-      tipoUsuario: user.tipoUsuario || '',
-      cref: user.tipoUsuario === 'PERSONAL' ? user.cref || '' : '',
-      cnpj: user.tipoUsuario === 'USERACADADMIN' ? user.cnpj || '' : ''
+      tipoUsuario: tipo,
+      cnpj: tipo === 'USERACADADMIN' ? user.cnpj || '' : '',
+      cref: tipo === 'PERSONAL' ? user.cref || '' : ''
     });
-  }, [loading]);
+  }, [loading, user]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -51,11 +49,11 @@ const EditarPerfilPage = () => {
       senha: form.senha
     };
 
-    if (form.tipoUsuario === 'PERSONAL') payload.cref = form.cref;
     if (form.tipoUsuario === 'USERACADADMIN') payload.cnpj = form.cnpj;
+    if (form.tipoUsuario === 'PERSONAL') payload.cref = form.cref;
 
     try {
-      await api.put('/usuarios/atualizar', payload, {
+      await api.put(`/usuarios/atualizar`, payload, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
 
@@ -75,86 +73,40 @@ const EditarPerfilPage = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block font-semibold">Nome</label>
-            <input
-              type="text"
-              name="nome"
-              value={form.nome}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md p-2"
-              required
-            />
+            <input type="text" name="nome" value={form.nome} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2" required />
           </div>
 
           <div>
             <label className="block font-semibold">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md p-2"
-              required
-            />
+            <input type="email" name="email" value={form.email} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2" required />
           </div>
 
           <div>
             <label className="block font-semibold">Telefone</label>
-            <input
-              type="text"
-              name="telefone"
-              value={form.telefone}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md p-2"
-              required
-            />
+            <input type="text" name="telefone" value={form.telefone} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2" required />
           </div>
-
-          {form.tipoUsuario === 'PERSONAL' && (
-            <div>
-              <label className="block font-semibold">CREF</label>
-              <input
-                type="text"
-                name="cref"
-                value={form.cref}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md p-2"
-                required
-              />
-            </div>
-          )}
 
           {form.tipoUsuario === 'USERACADADMIN' && (
             <div>
               <label className="block font-semibold">CNPJ</label>
-              <input
-                type="text"
-                name="cnpj"
-                value={form.cnpj}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md p-2"
-                required
-              />
+              <input type="text" name="cnpj" value={form.cnpj} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2" required />
+            </div>
+          )}
+
+          {form.tipoUsuario === 'PERSONAL' && (
+            <div>
+              <label className="block font-semibold">CREF</label>
+              <input type="text" name="cref" value={form.cref} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2" required />
             </div>
           )}
 
           <div>
             <label className="block font-semibold">Senha</label>
-            <input
-              type="password"
-              name="senha"
-              value={form.senha}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md p-2"
-              required
-            />
+            <input type="password" name="senha" value={form.senha} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2" required />
           </div>
 
-          <button
-            type="submit"
-            className="w-full bg-black text-white py-2 px-4 rounded-md border border-black hover:bg-white hover:text-black transition disabled:opacity-50"
-            disabled={loading}
-          >
-            {loading ? 'Carregando...' : 'Salvar Alterações'}
+          <button type="submit" className="w-full bg-black text-white py-2 px-4 rounded-md border border-black hover:bg-white hover:text-black transition">
+            Salvar Alterações
           </button>
         </form>
       </div>
