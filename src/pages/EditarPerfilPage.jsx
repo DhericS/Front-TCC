@@ -91,14 +91,14 @@ const EditarPerfilPage = () => {
             <input type="text" name="telefone" value={form.telefone} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2" required />
           </div>
 
-          {form.tipoUsuario === 'USERACADADMIN' && (
+          {form.tipoUsuario === 'useracadadmin' && (
             <div>
               <label className="block font-semibold">CNPJ</label>
               <input type="text" name="cnpj" value={form.cnpj} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2" required />
             </div>
           )}
 
-          {form.tipoUsuario === 'PERSONAL' && (
+          {form.tipoUsuario === 'personal' && (
             <div>
               <label className="block font-semibold">CREF</label>
               <input type="text" name="cref" value={form.cref} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2" required />
