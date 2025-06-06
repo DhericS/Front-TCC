@@ -28,7 +28,7 @@ const AcademiasPage = () => {
   const [filtros, setFiltros] = useState(filtrosPadrao);
   const [loading, setLoading] = useState(false);
   const [paginaAtual, setPaginaAtual] = useState(1);
-  const itensPorPagina = 12;
+  const itensPorPagina = 9;
 
   const inputRef = useRef(null);
 
