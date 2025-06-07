@@ -17,7 +17,9 @@ const TreinosPage = () => {
   const [search, setSearch] = useState('');
   const [filtros, setFiltros] = useState(filtrosPadrao);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const itensPorPagina = 9;
+
   const navigate = useNavigate();
 
   const handleCheckbox = (categoria, valor) => {
@@ -34,25 +36,17 @@ const TreinosPage = () => {
 
   const buscarTreinos = async () => {
     setLoading(true);
-    setError(null);
-
     const params = new URLSearchParams();
     if (search) params.append('search', search);
     filtros.tipos.forEach(tipo => params.append('tipos', tipo));
 
     try {
       const res = await api.get(`/treino/filtro?${params.toString()}`);
-
       const data = res.data;
-
-      if (Array.isArray(data)) {
-        setTreinos(data);
-      } else {
-        setTreinos([]);
-      }
-
-    } catch (err) {
-      toast.error('Erro ao buscar treinos!')
+      setTreinos(Array.isArray(data) ? data : []);
+      setPaginaAtual(1); // reinicia paginação ao buscar
+    } catch {
+      toast.error('Erro ao buscar treinos!');
       setTreinos([]);
     } finally {
       setLoading(false);
@@ -62,6 +56,10 @@ const TreinosPage = () => {
   useEffect(() => {
     buscarTreinos();
   }, [search, filtros]);
+
+  const indexInicio = (paginaAtual - 1) * itensPorPagina;
+  const indexFim = indexInicio + itensPorPagina;
+  const treinosPaginados = treinos.slice(indexInicio, indexFim);
 
   return (
     <>
@@ -113,7 +111,7 @@ const TreinosPage = () => {
             <p className="col-span-full text-center text-gray-500">Nenhum treino encontrado.</p>
           )}
 
-          {!loading && Array.isArray(treinos) && treinos.map((treino, index) => (
+          {!loading && treinosPaginados.map((treino, index) => (
             <motion.div
               key={treino.id}
               initial={{ opacity: 0, y: 20 }}
@@ -128,10 +126,37 @@ const TreinosPage = () => {
             >
               <h3 className="text-xl font-bold mb-1 text-black">{treino.nome}</h3>
               <p className="text-sm text-gray-600 mb-3 line-clamp-3">{treino.descricao}</p>
-              {/* Outros detalhes podem ser inseridos aqui */}
             </motion.div>
           ))}
         </div>
+
+        {!loading && treinos.length > itensPorPagina && (
+          <div className="mt-10 flex justify-center gap-4">
+            <button
+              onClick={() => setPaginaAtual(p => Math.max(p - 1, 1))}
+              disabled={paginaAtual === 1}
+              className="px-4 py-2 bg-gray-200 text-black rounded disabled:opacity-50"
+            >
+              Anterior
+            </button>
+
+            <span className="px-4 py-2 text-black font-bold">
+              Página {paginaAtual}
+            </span>
+
+            <button
+              onClick={() =>
+                setPaginaAtual(p =>
+                  p * itensPorPagina < treinos.length ? p + 1 : p
+                )
+              }
+              disabled={paginaAtual * itensPorPagina >= treinos.length}
+              className="px-4 py-2 bg-gray-200 text-black rounded disabled:opacity-50"
+            >
+              Próxima
+            </button>
+          </div>
+        )}
       </section>
     </>
   );
