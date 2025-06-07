@@ -133,9 +133,10 @@ const AcademiasPage = () => {
     setFinalSearch(termo);
   };
 
+  const todasAcademias = [...academias, ...academiasExternas];
   const indexInicio = (paginaAtual - 1) * itensPorPagina;
   const indexFim = indexInicio + itensPorPagina;
-  const academiasPaginadas = academias.slice(indexInicio, indexFim);
+  const todasPaginadas = todasAcademias.slice(indexInicio, indexFim);
 
   return (
     <>
