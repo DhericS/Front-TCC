@@ -9,7 +9,8 @@ const EditarDadosAcademia = () => {
   const [form, setForm] = useState({
     nome: '',
     endereco: '',
-    tipoAcad: ''
+    tipoAcad: '',
+    imagemUrl: '' 
   });
   const [loading, setLoading] = useState(false);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
@@ -23,7 +24,8 @@ const EditarDadosAcademia = () => {
           nome: res.data.nome,
           endereco: res.data.endereco,
           tipoAcad: res.data.tipoAcad,
-          telefone: res.data.telefone
+          telefone: res.data.telefone,
+          imagemUrl: res.data.imagemUrl
         });
       } catch (error) {
         toast.error('Erro ao carregar dados da academia');
