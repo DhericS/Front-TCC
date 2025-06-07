@@ -142,12 +142,24 @@ const EditarAcademia = () => {
           animate="show"
           className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center mb-12"
         >
-          <motion.img
-            variants={item}
-            src={academia.imagemUrl || '/assets/imagens/default-background.jpg'}
-            alt={academia.nome}
-            className="w-full h-72 md:h-96 object-cover rounded-3xl shadow-xl"
-          />
+          <motion.div className="relative">
+            <motion.img
+              variants={item}
+              src={academia.imagemUrl || '/assets/imagens/default-background.jpg'}
+              alt={academia.nome}
+              className="w-full h-72 md:h-96 object-cover rounded-3xl shadow-xl"
+            />
+            <label className="absolute bottom-4 right-4 bg-white text-black px-4 py-2 rounded-full cursor-pointer text-sm font-medium shadow">
+              {uploading ? 'Enviando...' : 'Alterar Imagem'}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleUploadImagem}
+                className="hidden"
+              />
+            </label>
+          </motion.div>
+
           <motion.div variants={item} className="flex flex-col gap-4">
             <h2 className="text-4xl font-extrabold text-black">{academia.nome}</h2>
             <p className="text-gray-600">{academia.endereco}</p>
@@ -169,58 +181,7 @@ const EditarAcademia = () => {
           </motion.div>
         </motion.div>
 
-        {/* Atividades */}
-        {academia.atividades?.length > 0 && (
-          <motion.div variants={container} initial="hidden" animate="show" className="mt-10">
-            <h3 className="text-2xl font-bold mb-6">Atividades</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {academia.atividades.map((a) => (
-                <motion.div
-                  key={a.id}
-                  variants={item}
-                  className="bg-white rounded-2xl p-5 shadow-lg hover:shadow-2xl transition-all relative"
-                >
-                  <p className="text-black font-semibold">
-                    {diaLabel[a.diaSemana] || a.diaSemana} - {a.horario}
-                  </p>
-                  <p className="text-gray-600 mb-3">{a.nome}</p>
-                  <div className="absolute top-2 right-2 flex gap-2">
-                    <Link to={`/atividades/editar/${a.id}`} className="text-xs bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded">Editar</Link>
-                    <button onClick={() => { setSelectedItem(a.id); setIsModalDeleteAtividadeOpen(true); }} className="text-xs bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded">Excluir</button>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        )}
 
-        {/* Planos */}
-        {academia.planos?.length > 0 && (
-          <motion.div variants={container} initial="hidden" animate="show" className="mt-20">
-            <h3 className="text-2xl font-bold mb-6">Planos disponíveis</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {academia.planos.map((p) => (
-                <motion.div
-                  key={p.id}
-                  variants={item}
-                  className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all relative"
-                >
-                  <div>
-                    <h4 className="text-lg font-bold mb-2">{p.nome}</h4>
-                    <p className="text-gray-600 mb-4">{p.descricao}</p>
-                  </div>
-                  <p className="text-3xl font-extrabold text-black">
-                    R$ {typeof p.preco === 'number' ? p.preco.toFixed(2) : '---'}
-                  </p>
-                  <div className="absolute top-2 right-2 flex gap-2">
-                    <Link to={`/planos/editar/${p.id}`} className="text-xs bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded">Editar</Link>
-                    <button onClick={() => { setSelectedItem(p.id); setIsModalDeletePlanoOpen(true); }} className="text-xs bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded">Excluir</button>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        )}
 
         <ModalDialog
           isOpen={isModalDeletePlanoOpen}

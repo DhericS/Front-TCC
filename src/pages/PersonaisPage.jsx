@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import SkeletonParagraphs from '../components/skeletons/SkeletonParagraphs';
@@ -25,6 +24,9 @@ export default function PersonaisPage() {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const itensPorPagina = 9;
+
   const navigate = useNavigate();
 
   const buscarPersonais = async () => {
@@ -39,6 +41,7 @@ export default function PersonaisPage() {
           p.email.toLowerCase().includes(search.toLowerCase())
         );
         setPersonais(filtrados);
+        setPaginaAtual(1); // reset ao buscar
       } else {
         throw new Error('Resposta inesperada da API');
       }
@@ -54,6 +57,10 @@ export default function PersonaisPage() {
   useEffect(() => {
     buscarPersonais();
   }, [search]);
+
+  const indexInicio = (paginaAtual - 1) * itensPorPagina;
+  const indexFim = indexInicio + itensPorPagina;
+  const personaisPaginados = personais.slice(indexInicio, indexFim);
 
   return (
     <>
@@ -100,14 +107,14 @@ export default function PersonaisPage() {
             animate="show"
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
           >
-            {!loading && personais.map((p) => (
+            {!loading && personaisPaginados.map((p) => (
               <motion.div
                 key={p.id}
                 variants={item}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => {
-                  localStorage.setItem('searchPersonalEmail', p.email);	
+                  localStorage.setItem('searchPersonalEmail', p.email);
                   navigate(`/personais/${p.id}`);
                   window.scrollTo(0, 0);
                 }}
@@ -126,6 +133,34 @@ export default function PersonaisPage() {
               </motion.div>
             ))}
           </motion.div>
+
+          {!loading && personais.length > itensPorPagina && (
+            <div className="flex justify-center mt-10 gap-3">
+              <button
+                onClick={() => setPaginaAtual(p => Math.max(p - 1, 1))}
+                disabled={paginaAtual === 1}
+                className="px-4 py-2 bg-gray-200 text-black rounded disabled:opacity-50"
+              >
+                Anterior
+              </button>
+
+              <span className="px-4 py-2 text-black font-bold">
+                Página {paginaAtual}
+              </span>
+
+              <button
+                onClick={() =>
+                  setPaginaAtual(p =>
+                    p * itensPorPagina < personais.length ? p + 1 : p
+                  )
+                }
+                disabled={paginaAtual * itensPorPagina >= personais.length}
+                className="px-4 py-2 bg-gray-200 text-black rounded disabled:opacity-50"
+              >
+                Próxima
+              </button>
+            </div>
+          )}
         </div>
       </section>
     </>
