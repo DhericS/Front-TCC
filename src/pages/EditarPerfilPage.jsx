@@ -15,7 +15,8 @@ const EditarPerfilPage = () => {
     senha: '',
     tipoUsuario: '',
     cnpj: '',
-    cref: ''
+    cref: '',
+    imagemUrl: ''
   });
 
   useEffect(() => {
@@ -30,7 +31,8 @@ const EditarPerfilPage = () => {
       senha: '',
       tipoUsuario: tipo,
       cnpj: tipo === 'useracadadmin' ? user.cnpj || '' : '',
-      cref: tipo === 'personal' ? user.cref || '' : ''
+      cref: tipo === 'personal' ? user.cref || '' : '',
+      imagemUrl: user.imagemUrl || '' 
     });
   }, [loading, user]);
 
