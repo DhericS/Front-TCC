@@ -31,14 +31,15 @@ const EditarAtividadePage = () => {
         console.log('🔍 Dados recebidos da API:', res.data); 
         setForm({
           nome: res.data.nome,
-          diaSemana: res.data.diaSemana,
-          horario: res.data.horario,
+          diaSemana: res.data.diaSemana?.toUpperCase(),
+          horario: res.data.horario?.trim(),
           academiaId: res.data.academiaId
         });
       })
       .catch(() => alert('Erro ao carregar atividade.'))
       .finally(() => setLoading(false));
   }, [id]);
+
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
