@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import SkeletonParagraphs from '../components/skeletons/SkeletonParagraphs';
 
-const filtrosPadrao = {
-  tipos: []
-};
+const filtrosPadrao = { tipos: [] };
 
 const opcoesFiltro = {
   tipos: ['BULKING', 'CUTTING']
@@ -18,7 +15,8 @@ export default function DietasPage() {
   const [search, setSearch] = useState('');
   const [filtros, setFiltros] = useState(filtrosPadrao);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const itensPorPagina = 9;
   const navigate = useNavigate();
 
   const handleCheckbox = (categoria, valor) => {
@@ -35,7 +33,6 @@ export default function DietasPage() {
 
   const buscarDietas = async () => {
     setLoading(true);
-    setError(null);
 
     const params = new URLSearchParams();
     if (search) params.append('search', search);
@@ -45,8 +42,8 @@ export default function DietasPage() {
       const res = await api.get(`/dieta/filtro?${params.toString()}`);
       const data = Array.isArray(res.data) ? res.data : [];
       setDietas(data);
-    } catch (err) {
-      setError('Erro ao carregar dietas.');
+      setPaginaAtual(1); // reinicia paginação a cada busca
+    } catch {
       setDietas([]);
     } finally {
       setLoading(false);
@@ -56,6 +53,10 @@ export default function DietasPage() {
   useEffect(() => {
     buscarDietas();
   }, [search, filtros]);
+
+  const indexInicio = (paginaAtual - 1) * itensPorPagina;
+  const indexFim = indexInicio + itensPorPagina;
+  const dietasPaginadas = dietas.slice(indexInicio, indexFim);
 
   return (
     <>
@@ -106,7 +107,7 @@ export default function DietasPage() {
             <p className="col-span-full text-center text-gray-500">Nenhuma dieta encontrada.</p>
           )}
 
-          {!loading && dietas.map((dieta, index) => (
+          {!loading && dietasPaginadas.map((dieta, index) => (
             <motion.div
               key={dieta.id}
               initial={{ opacity: 0, y: 20 }}
@@ -125,6 +126,34 @@ export default function DietasPage() {
             </motion.div>
           ))}
         </div>
+
+        {!loading && dietas.length > itensPorPagina && (
+          <div className="mt-10 flex justify-center gap-4">
+            <button
+              onClick={() => setPaginaAtual(p => Math.max(p - 1, 1))}
+              disabled={paginaAtual === 1}
+              className="px-4 py-2 bg-gray-200 text-black rounded disabled:opacity-50"
+            >
+              Anterior
+            </button>
+
+            <span className="px-4 py-2 text-black font-bold">
+              Página {paginaAtual}
+            </span>
+
+            <button
+              onClick={() =>
+                setPaginaAtual(p =>
+                  p * itensPorPagina < dietas.length ? p + 1 : p
+                )
+              }
+              disabled={paginaAtual * itensPorPagina >= dietas.length}
+              className="px-4 py-2 bg-gray-200 text-black rounded disabled:opacity-50"
+            >
+              Próxima
+            </button>
+          </div>
+        )}
       </section>
     </>
   );
