@@ -49,7 +49,8 @@ const EditarPerfilPage = () => {
       nome: form.nome,
       email: form.email,
       telefone: form.telefone,
-      senha: form.senha
+      senha: form.senha,
+      imagemUrl: form.imagemUrl 
     };
 
     if (form.tipoUsuario === 'useracadadmin') payload.cnpj = form.cnpj;
