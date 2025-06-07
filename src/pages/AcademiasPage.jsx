@@ -189,29 +189,38 @@ const AcademiasPage = () => {
             </div>
           )}
 
-          {!loading && academias.length === 0 && academiasExternas.length === 0 && (
+          {!loading && todasAcademias.length === 0 && (
             <p className="col-span-full text-center text-gray-500">Nenhuma academia encontrada.</p>
           )}
 
-          {!loading && academias.length > 0 && (
+          {!loading && todasAcademias.length > 0 && (
             <div className="col-span-full mb-4">
               <h3 className="text-2xl font-bold text-black">Academias</h3>
             </div>
           )}
 
-          {!loading && academiasPaginadas.map((a, index) => (
+          {!loading && todasPaginadas.map((a, index) => (
             <motion.div
-              key={a.id}
+              key={a.id || a.placeId}
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.15 }}
               viewport={{ once: true }}
               className="bg-gradient-to-br from-white to-gray-100 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 cursor-pointer"
-              onClick={() => navigate(`/academias/${a.id}`)}
+              onClick={() => {
+                if (a.id) navigate(`/academias/${a.id}`);
+                else window.location.href = `/academias-externas/${a.placeId}`;
+              }}
             >
               <div className="group relative">
                 <img
-                  src={a.imagemUrl || '/assets/imagens/default-background.jpg'}
+                  src={
+                    a.imagemUrl
+                      ? a.imagemUrl
+                      : a.photoReference
+                        ? `https://places.googleapis.com/v1/${a.photoReference}/media?maxWidthPx=800&key=${apiKey}`
+                        : '/assets/imagens/default-background.jpg'
+                  }
                   alt={a.nome}
                   className="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-110"
                 />
@@ -220,84 +229,41 @@ const AcademiasPage = () => {
               <div className="p-5">
                 <h3 className="text-2xl font-extrabold mb-2 text-black tracking-tight">{a.nome}</h3>
                 <p className="text-sm text-gray-600">{a.endereco}</p>
+                {a.avaliacao && (
+                  <p className="text-yellow-500 text-sm mt-1">⭐ {a.avaliacao} ({a.totalAvaliacoes})</p>
+                )}
               </div>
             </motion.div>
           ))}
-
-          {!loading && academias.length > itensPorPagina && (
-            <div className="col-span-full flex justify-center mt-6 gap-2">
-              <button
-                onClick={() => setPaginaAtual(p => Math.max(p - 1, 1))}
-                disabled={paginaAtual === 1}
-                className="px-4 py-2 bg-gray-200 text-black rounded disabled:opacity-50"
-              >Anterior</button>
-              <span className="px-4 py-2 text-black font-bold">Página {paginaAtual}</span>
-              <button
-                onClick={() =>
-                  setPaginaAtual(p =>
-                    p * itensPorPagina < academias.length ? p + 1 : p
-                  )
-                }
-                disabled={paginaAtual * itensPorPagina >= academias.length}
-                className="px-4 py-2 bg-gray-200 text-black rounded disabled:opacity-50"
-              >Próxima</button>
-            </div>
-          )}
-
-          {!loading && academiasExternas.length > 0 && (
-            <div className="col-span-full">
-              <h3 className="text-2xl font-bold text-black mb-4">Academias Externas</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-                {academiasExternasPaginadas.map((a, index) => (
-                  <motion.div
-                    key={a.placeId}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                    className="bg-gray-100 rounded-lg overflow-hidden shadow hover:shadow-lg transition cursor-pointer"
-                  >
-                    <img
-                      src={
-                        a.photoReference
-                          ? `https://places.googleapis.com/v1/${a.photoReference}/media?maxWidthPx=800&key=${apiKey}`
-                          : '/assets/imagens/default-background.jpg'
-                      }
-                      alt={a.nome}
-                      className="w-full h-48 object-cover cursor-pointer"
-                      onClick={() => window.location.href = `/academias-externas/${a.placeId}`}
-                    />
-                    <div className="p-4">
-                      <h3 className="text-xl font-bold mb-1 text-black">{a.nome}</h3>
-                      <p className="text-sm text-gray-600 mb-1">{a.endereco}</p>
-                      <p className="text-yellow-500 text-sm">⭐ {a.avaliacao} ({a.totalAvaliacoes})</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-
-              {academiasExternas.length > itensPorPaginaExterna && (
-                <div className="flex justify-center mt-6 gap-2">
-                  <button
-                    onClick={() => setPaginaExterna(p => Math.max(p - 1, 1))}
-                    disabled={paginaExterna === 1}
-                    className="px-4 py-2 bg-gray-200 text-black rounded disabled:opacity-50"
-                  >Anterior</button>
-                  <span className="px-4 py-2 text-black font-bold">Página {paginaExterna}</span>
-                  <button
-                    onClick={() =>
-                      setPaginaExterna(p =>
-                        p * itensPorPaginaExterna < academiasExternas.length ? p + 1 : p
-                      )
-                    }
-                    disabled={paginaExterna * itensPorPaginaExterna >= academiasExternas.length}
-                    className="px-4 py-2 bg-gray-200 text-black rounded disabled:opacity-50"
-                  >Próxima</button>
-                </div>
-              )}
-            </div>
-          )}
         </div>
+
+        {!loading && todasAcademias.length > itensPorPagina && (
+          <div className="col-span-full flex justify-center mt-6 gap-2">
+            <button
+              onClick={() => setPaginaAtual(p => Math.max(p - 1, 1))}
+              disabled={paginaAtual === 1}
+              className="px-4 py-2 bg-gray-200 text-black rounded disabled:opacity-50"
+            >
+              Anterior
+            </button>
+
+            <span className="px-4 py-2 text-black font-bold">
+              Página {paginaAtual}
+            </span>
+
+            <button
+              onClick={() =>
+                setPaginaAtual(p =>
+                  p * itensPorPagina < todasAcademias.length ? p + 1 : p
+                )
+              }
+              disabled={paginaAtual * itensPorPagina >= todasAcademias.length}
+              className="px-4 py-2 bg-gray-200 text-black rounded disabled:opacity-50"
+            >
+              Próxima
+            </button>
+          </div>
+        )}
       </section>
     </>
   );
